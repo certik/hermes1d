@@ -14,8 +14,9 @@ class DiscreteProblem:
 
     def create_matrix(self):
         from numpy import zeros
-        self.A = zeros((3, 3), dtype="double")
-        self.RHS = zeros((3), dtype="double")
+        n = self.space.ndofs()
+        self.A = zeros((n, n), dtype="double")
+        self.RHS = zeros((n), dtype="double")
 
     def assemble_matrix_and_rhs(self):
         from numpy import zeros

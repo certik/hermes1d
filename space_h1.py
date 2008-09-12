@@ -4,6 +4,9 @@ class H1Space(object):
         self.mesh = mesh
         self.shapeset = shapeset
 
+    def ndofs(self):
+        return self.mesh.len()+1
+
     def set_uniform_order(self, order):
         pass
 

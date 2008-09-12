@@ -13,6 +13,9 @@ class Function(object):
     ShapeFunction() is internally represented using the (shapeset, idx, diff)
     tuple.
 
+    Mul() just contains the two arguments (u*v) and employs the best algorithm
+    for each operation you ask it.
+
     The idea is that you just deal with all functions using the general
     Function interface and each function knows the best how to deal with itself
     (and others) using the most efficient algorithms.
@@ -39,10 +42,26 @@ class Function(object):
         y = [self.f(_x) for _x in x]
         return trapz(y, x)
 
-    def __mul__(self, x):
-        return self
+    def __mul__(self, f):
+        return Mul(self, f)
 
-class Solution(Function):
+class Mul(Function):
+
+    def __init__(self, a, b):
+        self.args = (a, b)
+        self._domain_range = a.domain_range()
+
+    def domain_range(self):
+        return self._domain_range
+
+    def f(self, x):
+        return self.args[0].f(x) * self.args[1].f(x)
+
+
+class MeshFunction(Function):
+    pass
+
+class Solution(MeshFunction):
 
     def domain_range(self):
         return 0, 3.14159

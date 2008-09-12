@@ -7,16 +7,45 @@ class DiscreteProblem:
         self.space = space
 
     def set_bilinear_form(self, i, j, callback):
-        pass
+        self.bilinear_form = callback
 
     def set_linear_form(self, i, callback):
-        pass
+        self.linear_form = callback
 
     def create_matrix(self):
-        pass
+        from numpy import zeros
+        self.A = zeros((3, 3), dtype="double")
+        self.RHS = zeros((3), dtype="double")
 
     def assemble_matrix_and_rhs(self):
-        pass
+        from numpy import zeros
+        for e in self.space.elements():
+            mat = zeros((2, 2), dtype="double")
+            for phi_i in e.shape_functions():
+                for phi_j in e.shape_functions():
+                    mat[phi_i.idx, phi_j.idx] = self.bilinear_form(phi_i,
+                            phi_j)
+            self.insert_matrix(mat, e.dof_map)
+            #self.insert_vec(mat, e.dof_map)
+        # BC:
+        l = 0
+        r = len(self.RHS)-1
+        penalty = 10**6
+        val = 0.0001
+        self.A[l, l] = penalty
+        self.RHS[l] = val*penalty
+        self.A[r, r] = penalty
+        self.RHS[r] = val*penalty
+
+    def insert_matrix(self, mat, dof_map):
+        for i in range(len(dof_map)):
+            for j in range(len(dof_map)):
+                self.A[dof_map[i], dof_map[j]] = mat[i, j]
 
     def solve_system(self, sln):
-        sln.space = self.space
+        print self.A
+        print self.RHS
+        from scipy.linalg import solve
+        x = solve(self.A, self.RHS)
+        print x
+        sln.set_fe_solution(self.space, x)

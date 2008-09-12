@@ -7,7 +7,7 @@ class Mesh(object):
         pass
 
     def len(self):
-        return 2
+        return 5
 
 class Elem(object):
 

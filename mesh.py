@@ -14,7 +14,7 @@ class Elem(object):
     def __init__(self, id, shapeset):
         self.shapeset = shapeset
 
-    def set_dofs(self, dofs):
+    def set_dof_map(self, dofs):
         self.dof_map = dofs
 
     def shape_functions(self):

@@ -3,7 +3,19 @@ class Function(object):
     Represents a function.
 
     Each function has a domain and values over this domain. However, the exact
-    representation depends on circumstances.
+    representation depends on the circumstances.
+
+    Examples:
+
+    MeshFunction() is internally represented as a linear combination of basis
+    functions.
+
+    ShapeFunction() is internally represented using the (shapeset, idx, diff)
+    tuple.
+
+    The idea is that you just deal with all functions using the general
+    Function interface and each function knows the best how to deal with itself
+    (and others) using the most efficient algorithms.
     """
 
     def diff(self):

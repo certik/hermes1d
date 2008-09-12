@@ -32,11 +32,12 @@ class DiscreteProblem:
         l = 0
         r = len(self.RHS)-1
         penalty = 10**6
-        val = 0.0001
+        val1 = 0.0001
+        val2 = 1.0
         self.A[l, l] = penalty
-        self.RHS[l] = val*penalty
+        self.RHS[l] = val1*penalty
         self.A[r, r] = penalty
-        self.RHS[r] = val*penalty
+        self.RHS[r] = val2*penalty
 
     def insert_matrix(self, mat, dof_map):
         for i in range(len(dof_map)):

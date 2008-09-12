@@ -59,22 +59,22 @@ class Mul(Function):
 
 
 class MeshFunction(Function):
-    pass
+
+    def get_xy(self):
+        return self.mesh.get_nodes_x(), self.coeff
+
+    def f(self, x):
+        e = self.mesh.get_element_x(x)
+        return self.coeff[e.id]
 
 class Solution(MeshFunction):
 
     def domain_range(self):
-        return 0, 3.14159
-
-    def f(self, x):
-        idx = int(x)
-        if idx < 0:
-            idx = 0
-        if idx > len(self.coeff) - 1:
-            idx = len(self.coeff) - 1
-        return self.coeff[idx]
+        return self.mesh.domain_range
 
     def set_fe_solution(self, space, x):
+        self.space = space
+        self.mesh = space.mesh
         self.coeff = x
 
 class ShapeFunction(Function):

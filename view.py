@@ -6,9 +6,7 @@ class ScalarView:
     def show(self, f):
         from numpy import arange
         import pylab
-        a, b = f.domain_range()
-        x = arange(a, b, float(b-a)/100)
-        y = [f(_x) for _x in x]
+        x, y = f.get_xy()
         pylab.plot(x, y)
         def click(event):
             if event.key == "q":

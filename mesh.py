@@ -1,13 +1,22 @@
 class Mesh(object):
 
     def set_interval(self, a, b):
-        pass
+        self.domain_range = (a, b)
+        self._len = 2
 
     def refine_element(self, id):
         pass
 
+    def refine_all_elements(self):
+        self._len *= 2
+
     def len(self):
-        return 5
+        return self._len
+
+    def get_nodes_x(self):
+        from numpy import arange
+        a, b = self.domain_range
+        return arange(a, b, float(b-a)/(self._len+1))
 
 class Elem(object):
 

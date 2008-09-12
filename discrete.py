@@ -4,7 +4,7 @@ class DiscreteProblem:
         pass
 
     def set_spaces(self, space):
-        pass
+        self.space = space
 
     def set_bilinear_form(self, i, j, callback):
         pass
@@ -19,4 +19,4 @@ class DiscreteProblem:
         pass
 
     def solve_system(self, sln):
-        pass
+        sln.space = self.space

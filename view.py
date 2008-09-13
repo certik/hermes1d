@@ -50,6 +50,7 @@ class ScalarView(View):
 
     def show(self, f):
         self.plot_function(f)
+        self.plot_mesh(f.mesh)
         self.fig.canvas.draw()
 
 class BaseView(ScalarView):
@@ -72,6 +73,7 @@ class BaseView(ScalarView):
     def update_solution(self):
         self.fig.clf()
         self.plot_base_function(self.space, self.base_index)
+        self.plot_mesh(self.space.mesh)
         self.fig.gca().set_title("dof = %d" % self.base_index)
         self.fig.canvas.draw()
 

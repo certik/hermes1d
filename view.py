@@ -8,6 +8,10 @@ class ScalarView(View):
         self.fig = figure()
         self.fig.canvas.manager.resize(width, height)
         self.fig.canvas.manager.set_window_title(title)
+        if x != -1 and y != -1:
+            # this only works for the GTK backend of matplotlib:
+            self.fig.canvas.manager.window.move(x, y)
+
         def click(canvas, event):
             key = canvas._get_key(event)
             self.key_press_event(key)

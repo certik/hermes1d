@@ -87,3 +87,12 @@ class Elem(object):
 
     def contains(self, x):
         return self.nodes[0].x <= x and x <= self.nodes[1].x
+
+    def real2reference(self, x):
+        """
+        Converts "x" to local coordinates (reference element).
+        """
+
+        n1, n2 = self.nodes
+        n1, n2 = n1.x, n2.x
+        return float(x-n1)/(n2-n1)

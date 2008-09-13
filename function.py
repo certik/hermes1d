@@ -30,6 +30,22 @@ class Function(object):
     def f(self, x):
         raise NotImplementedError()
 
+    def get_xy(self, steps=5):
+        def interp(a, b, steps):
+            x = [a]
+            dx = float(b-a)/steps
+            while x[-1] + dx < b:
+                x.append(x[-1]+dx)
+            return x
+
+        x = []
+        for e in self.mesh.iter_elements():
+            x.extend(interp(e.nodes[0].x, e.nodes[1].x, steps))
+        x.sort()
+        y = [self.f(c) for c in x]
+        return x, y
+
+
     def domain_range(self):
         raise NotImplementedError()
 
@@ -67,6 +83,7 @@ class Derivative(Function):
 
     def __init__(self, f):
         self._f = f
+        self.mesh = f.mesh
 
     def f(self, x):
         return self._f.eval_deriv(x)
@@ -80,17 +97,9 @@ class MeshFunction(Function):
     BaseFunctions.
     """
 
-    def get_xy(self, n=3):
-        """
-        Returns linearized xy values.
-
-        n ... the number of points between mesh elements.
-        """
-        return self.mesh.get_nodes_x(), self.coeff
-
-    def f(self, x):
-        e = self.mesh.get_element_x(x)
-        return self.coeff[e.id]
+    #def f(self, x):
+    #    e = self.mesh.get_element_x(x)
+    #    return self.coeff[e.id]
 
 class Solution(MeshFunction):
 
@@ -101,6 +110,12 @@ class Solution(MeshFunction):
         self.space = space
         self.mesh = space.mesh
         self.coeff = x
+
+    def f(self, x):
+        val = 0.
+        for c, b in zip(self.coeff, self.space.base_functions):
+            val += c*b.f(x)
+        return val
 
 class BaseFunction(Function):
     """
@@ -114,47 +129,19 @@ class BaseFunction(Function):
         self.dof = dof
         self.mesh = mesh
         self.shapeset = shapeset
-        self.els = []
+        self.els = {}
 
     def global_dof(self):
         return self.dof
 
     def contains(self, el):
-        d = {}
-        for e, idx in self.els:
-            d[e] = idx
-        return el in d
-
-    def get_xy(self, steps=2):
-        d = {}
-        for e, idx in self.els:
-            d[e] = idx
-        x = []
-        y = []
-        for e in self.mesh.iter_elements():
-            x.extend([e.nodes[0].x, e.nodes[1].x])
-            if e in d:
-                idx = d[e]
-                if idx == 0:
-                    y.extend([1, 0])
-                elif idx == 1:
-                    y.extend([0, 1])
-                else:
-                    raise NotImplementedError()
-            else:
-                y.extend([0, 0])
-
-        return x, y
+        return el in self.els
 
     def domain_elements(self):
-        return [e for e, idx in self.els]
+        return [e for e, idx in self.els.iteritems()]
 
     def element_idx(self, el):
-        d = {}
-        for e, idx in self.els:
-            d[e] = idx
-        assert el in d
-        return d[el]
+        return self.els[el]
 
     def add_element(self, e, idx):
         """
@@ -164,9 +151,9 @@ class BaseFunction(Function):
         idx ... integer, idx of the shape function from the shapeset
 
         """
-        self.els.append((e, idx))
+        self.els[e] = idx
 
-    def fx(self, x, idx, diff=0):
+    def values(self, x, idx, diff=0):
         if diff == 0:
             if idx == 0:
                 return 1-x
@@ -179,19 +166,16 @@ class BaseFunction(Function):
                 return 1
         raise NotImplementedError()
 
-    def fd(self, x, diff=0):
-        d = {}
-        for e, idx in self.els:
-            d[e] = idx
+    def f(self, x):
         e = self.mesh.get_element_by_coor(x)
-        if e in d:
-            idx = d[e]
-            return self.fx(x, idx, diff)
+        if e in self.els:
+            return self.values(e.real2reference(x), self.els[e], 0)
         else:
             return 0.
 
-    def f(self, x):
-        return self.fd(x, 0)
-
     def eval_deriv(self, x):
-        return self.fd(x, 1)
+        e = self.mesh.get_element_by_coor(x)
+        if e in self.els:
+            return self.values(e.real2reference(x), self.els[e], 1)
+        else:
+            return 0.

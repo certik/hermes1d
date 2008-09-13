@@ -43,11 +43,12 @@ class DiscreteProblem:
         if self.space._bc_types[0] == BC_NEUMANN:
             val = self.space._bc_values[0]
             n = 0
-            self.RHS[n] += val
+            # XXX: why do I need to divide by 4 here?
+            self.RHS[n] += val/4.
         if self.space._bc_types[1] == BC_NEUMANN:
             val = self.space._bc_values[1]
             n = len(self.RHS)-1
-            self.RHS[n] += -val
+            self.RHS[n] += -val/4.
 
     def insert_matrix(self, mat, dof_map):
         for i in range(len(dof_map)):

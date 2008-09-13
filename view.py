@@ -91,3 +91,11 @@ class MeshView(View):
     def show(self, mesh):
         self.plot_mesh(mesh)
         self.fig.canvas.draw()
+
+class MatrixView(View):
+
+    def __init__(self, title="MatrixView", x=-1, y=-1, width=500, height=500):
+        View.__init__(self, title, x, y, width, height)
+
+    def show(self, dp):
+        self.fig.gca().spy(dp.A)

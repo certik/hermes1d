@@ -10,8 +10,8 @@ class Function(object):
     MeshFunction() is internally represented as a linear combination of basis
     functions.
 
-    ShapeFunction() is internally represented using the (shapeset, idx, diff)
-    tuple.
+    BaseFunction() is internally represented using the (shapeset, idx, diff)
+    tuple for all elements over which it spans and by some particular mesh.
 
     Mul() just contains the two arguments (u*v) and employs the best algorithm
     for each operation you ask it.
@@ -59,8 +59,17 @@ class Mul(Function):
 
 
 class MeshFunction(Function):
+    """
+    Represent any function that is defined as a linear combination of
+    BaseFunctions.
+    """
 
-    def get_xy(self):
+    def get_xy(self, n=3):
+        """
+        Returns linearized xy values.
+
+        n ... the number of points between mesh elements.
+        """
         return self.mesh.get_nodes_x(), self.coeff
 
     def f(self, x):
@@ -77,7 +86,10 @@ class Solution(MeshFunction):
         self.mesh = space.mesh
         self.coeff = x
 
-class ShapeFunction(Function):
+class xShapeFunction(Function):
+    """
+    Deprecated.
+    """
 
     def __init__(self, shapeset, idx, diff=0):
         self._shapeset = shapeset
@@ -106,3 +118,45 @@ class ShapeFunction(Function):
             if self._idx == 1:
                 return 1
         raise NotImplementedError()
+
+class BaseFunction(Function):
+    """
+    Represents one base function.
+
+    It is internally represented using the (shapeset, idx, diff) tuple for all
+    elements over which it spans and by some particular mesh.
+    """
+
+    def __init__(self, mesh, shapeset):
+        self.mesh = mesh
+        self.shapeset = shapeset
+        self.els = []
+
+    def get_xy(self, steps=2):
+        d = {}
+        for e, idx in self.els:
+            d[e] = idx
+        x = []
+        y = []
+        for e in self.mesh.iter_elements():
+            if e in d:
+                idx = d[e]
+                x.extend([e.nodes[0].x, e.nodes[1].x])
+                if idx == 0:
+                    y.extend([1, 0])
+                elif idx == 1:
+                    y.extend([0, 1])
+                else:
+                    raise NotImplementedError()
+
+        return x, y
+
+    def add_element(self, e, idx):
+        """
+        Defines the BaseFunction on the element "e".
+
+        e ... Elem instance
+        idx ... integer, idx of the shape function from the shapeset
+
+        """
+        self.els.append((e, idx))

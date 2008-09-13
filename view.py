@@ -34,7 +34,7 @@ class View(object):
         x, y = f.get_xy()
         self.fig.gca().plot(x, y)
 
-    def plot_base_function(self, space, idx):
+    def xplot_base_function(self, space, idx):
         from numpy import zeros
         from hermes1d import Solution
         x = zeros(space.get_num_dofs())
@@ -72,7 +72,7 @@ class BaseView(ScalarView):
 
     def update_solution(self):
         self.fig.clf()
-        self.plot_base_function(self.space, self.base_index)
+        self.plot_function(self.space.get_base_function(self.base_index))
         self.plot_mesh(self.space.mesh)
         self.fig.gca().set_title("dof = %d" % self.base_index)
         self.fig.canvas.draw()

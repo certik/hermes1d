@@ -3,9 +3,11 @@ class View(object):
 
 class ScalarView(View):
 
-    def __init__(self, *args):
+    def __init__(self, title="ScalarView", x=-1, y=-1, width=500, height=500):
         from matplotlib.pyplot import figure
         self.fig = figure()
+        self.fig.canvas.manager.resize(width, height)
+        self.fig.canvas.manager.set_window_title(title)
         def click(canvas, event):
             key = canvas._get_key(event)
             self.key_press_event(key)
@@ -30,8 +32,8 @@ class ScalarView(View):
 
 class BaseView(ScalarView):
 
-    def __init__(self, *args):
-        ScalarView.__init__(self, *args)
+    def __init__(self, title="BaseView", x=-1, y=-1, width=500, height=500):
+        ScalarView.__init__(self, title, x, y, width, height)
 
     def key_press_event(self, key):
         if key == "left":

@@ -1,4 +1,7 @@
-class DiscreteProblem:
+class DiscreteProblem(object):
+
+    def __init__(self):
+        self.linear_form = None
 
     def set_num_equations(self, num):
         pass
@@ -26,7 +29,8 @@ class DiscreteProblem:
                 for phi_j in shape_functions:
                     j = phi_j.global_dof()
                     self.A[i, j] = self.bilinear_form(phi_i, phi_j)
-                self.RHS[i] = self.linear_form(phi_i)
+                if self.linear_form:
+                    self.RHS[i] = self.linear_form(phi_i)
         #print self.A
         #print self.RHS
         # BC:
@@ -45,12 +49,11 @@ class DiscreteProblem:
         if self.space._bc_types[0] == BC_NEUMANN:
             val = self.space._bc_values[0]
             n = 0
-            # XXX: why do I need to divide by 4 here?
-            self.RHS[n] += val/4.
+            self.RHS[n] += val
         if self.space._bc_types[1] == BC_NEUMANN:
             val = self.space._bc_values[1]
             n = len(self.RHS)-1
-            self.RHS[n] += -val/4.
+            self.RHS[n] += -val
 
     def insert_matrix(self, mat, dof_map):
         for i in range(len(dof_map)):

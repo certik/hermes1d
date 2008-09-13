@@ -139,15 +139,17 @@ class BaseFunction(Function):
         x = []
         y = []
         for e in self.mesh.iter_elements():
+            x.extend([e.nodes[0].x, e.nodes[1].x])
             if e in d:
                 idx = d[e]
-                x.extend([e.nodes[0].x, e.nodes[1].x])
                 if idx == 0:
                     y.extend([1, 0])
                 elif idx == 1:
                     y.extend([0, 1])
                 else:
                     raise NotImplementedError()
+            else:
+                y.extend([0, 0])
 
         return x, y
 

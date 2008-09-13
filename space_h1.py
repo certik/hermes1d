@@ -35,11 +35,13 @@ class H1Space(object):
         """
         from hermes1d import BaseFunction
         b = []
-        f = BaseFunction(self.mesh, self.shapeset)
+        dof = 0
+        f = BaseFunction(self.mesh, self.shapeset, dof)
         for e in self.mesh.iter_elements():
             f.add_element(e, 0)
             b.append(f)
-            f = BaseFunction(self.mesh, self.shapeset)
+            dof += 1
+            f = BaseFunction(self.mesh, self.shapeset, dof)
             f.add_element(e, 1)
         b.append(f)
         self.base_functions = b
@@ -50,9 +52,22 @@ class H1Space(object):
     def assign_dofs(self):
         self.build()
 
-    def elements(self):
+    def xelements(self):
         from mesh import Elem
         for e in range(self.mesh.len()):
             el = Elem(e, self.shapeset)
             el.set_dof_map((e, e+1))
             yield el
+
+    def shape_functions(self, e):
+        l = []
+        for f in self.base_functions:
+            if f.contains(e):
+                l.append(f)
+        return l
+
+    def dof_map(self, e):
+        l = self.shape_functions(e)
+        dofmap = [b.global_dof() for b in l]
+        return dofmap
+

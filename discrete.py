@@ -20,13 +20,15 @@ class DiscreteProblem:
 
     def assemble_matrix_and_rhs(self):
         from numpy import zeros
-        for e in self.space.elements():
+        for e in self.space.mesh.iter_elements():
             mat = zeros((2, 2), dtype="double")
-            for phi_i in e.shape_functions():
-                for phi_j in e.shape_functions():
-                    mat[phi_i.idx, phi_j.idx] = self.bilinear_form(phi_i,
-                            phi_j)
-            self.insert_matrix(mat, e.dof_map)
+            shape_functions = self.space.shape_functions(e)
+            for phi_i in shape_functions:
+                for phi_j in shape_functions:
+                    i = phi_i.element_idx(e)
+                    j = phi_j.element_idx(e)
+                    mat[i, j] = self.bilinear_form(phi_i, phi_j)
+            self.insert_matrix(mat, self.space.dof_map(e))
             #self.insert_vec(mat, e.dof_map)
         # BC:
         l = 0
@@ -42,7 +44,7 @@ class DiscreteProblem:
     def insert_matrix(self, mat, dof_map):
         for i in range(len(dof_map)):
             for j in range(len(dof_map)):
-                self.A[dof_map[i], dof_map[j]] = mat[i, j]
+                self.A[dof_map[i], dof_map[j]] += mat[i, j]
 
     def solve_system(self, sln):
         print self.A

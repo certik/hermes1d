@@ -22,7 +22,7 @@ class Function(object):
     """
 
     def diff(self):
-        raise NotImplementedError()
+        return Derivative(self)
 
     def __call__(self, x):
         return self.f(x)
@@ -36,11 +36,15 @@ class Function(object):
     def integrate(self):
         from numpy import arange
         from scipy import trapz
-        a, b = self.domain_range()
-        N = 3
-        x = arange(a, b, float(b-a)/N)
-        y = [self.f(_x) for _x in x]
-        return trapz(y, x)
+        domain = self.domain_elements()
+        integral = 0
+        for e in domain:
+            N = 3
+            a, b = e.nodes[0].x, e.nodes[1].x
+            x = arange(a, b, float(b-a)/N)
+            y = [self.f(_x) for _x in x]
+            integral += trapz(y, x)
+        return integral
 
     def __mul__(self, f):
         return Mul(self, f)
@@ -49,14 +53,20 @@ class Mul(Function):
 
     def __init__(self, a, b):
         self.args = (a, b)
-        self._domain_range = a.domain_range()
 
-    def domain_range(self):
-        return self._domain_range
+    def domain_elements(self):
+        return self.args[0].domain_elements()
 
     def f(self, x):
         return self.args[0].f(x) * self.args[1].f(x)
 
+class Derivative(Function):
+
+    def __init__(self, f):
+        self.f = f
+
+    def domain_elements(self):
+        return self.f.domain_elements()
 
 class MeshFunction(Function):
     """
@@ -127,10 +137,20 @@ class BaseFunction(Function):
     elements over which it spans and by some particular mesh.
     """
 
-    def __init__(self, mesh, shapeset):
+    def __init__(self, mesh, shapeset, dof):
+        self.dof = dof
         self.mesh = mesh
         self.shapeset = shapeset
         self.els = []
+
+    def global_dof(self):
+        return self.dof
+
+    def contains(self, el):
+        d = {}
+        for e, idx in self.els:
+            d[e] = idx
+        return el in d
 
     def get_xy(self, steps=2):
         d = {}
@@ -153,6 +173,16 @@ class BaseFunction(Function):
 
         return x, y
 
+    def domain_elements(self):
+        return [e for e, idx in self.els]
+
+    def element_idx(self, el):
+        d = {}
+        for e, idx in self.els:
+            d[e] = idx
+        assert el in d
+        return d[el]
+
     def add_element(self, e, idx):
         """
         Defines the BaseFunction on the element "e".
@@ -162,3 +192,27 @@ class BaseFunction(Function):
 
         """
         self.els.append((e, idx))
+
+    def fx(self, x, idx, diff=0):
+        if diff == 0:
+            if idx == 0:
+                return 1-x
+            if idx == 1:
+                return x
+        elif diff == 1:
+            if idx == 0:
+                return -1
+            if idx == 1:
+                return 1
+        raise NotImplementedError()
+
+    def f(self, x, diff=0):
+        d = {}
+        for e, idx in self.els:
+            d[e] = idx
+        e = self.mesh.get_element_by_coor(x)
+        if e in d:
+            idx = d[e]
+            return self.fx(x, idx, diff)
+        else:
+            return 0.

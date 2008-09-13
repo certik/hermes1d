@@ -45,6 +45,13 @@ class Mesh(object):
         coords.sort()
         return coords
 
+    def get_element_by_coor(self, x):
+        for e in self.active_elements:
+            if e.contains(x):
+                return e
+        raise Exception("No element contains x.")
+
+
 class Node(object):
 
     def __init__(self, mesh, x):
@@ -78,7 +85,5 @@ class Elem(object):
         e2 = Elem(self.mesh, half, self.nodes[1])
         return e1, e2, half
 
-    def shape_functions(self):
-        from function import ShapeFunction
-        for idx in range(len(self.dof_map)):
-            yield ShapeFunction(self.shapeset, idx)
+    def contains(self, x):
+        return self.nodes[0].x <= x and x <= self.nodes[1].x

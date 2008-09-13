@@ -1,9 +1,12 @@
 class View(object):
-    pass
+    """
+    Provides basic methods for plotting meshes, functions, basefunctions, ...
 
-class ScalarView(View):
+    The subclasses of View provide customized behavior, like looping through
+    base functions using arrow keys etc.
+    """
 
-    def __init__(self, title="ScalarView", x=-1, y=-1, width=500, height=500):
+    def __init__(self, title="View", x=-1, y=-1, width=500, height=500):
         from matplotlib.pyplot import figure
         self.fig = figure()
         self.fig.canvas.manager.resize(width, height)
@@ -22,12 +25,31 @@ class ScalarView(View):
             import pylab
             pylab.close(self.fig)
 
-    def plot(self, f):
+    def plot_mesh(self, mesh):
+        x = mesh.get_nodes_x()
+        y = [0]*len(x)
+        self.fig.gca().plot(x, y, "ko")
+
+    def plot_function(self, f):
         x, y = f.get_xy()
         self.fig.gca().plot(x, y)
 
+    def plot_base_function(self, space, idx):
+        from numpy import zeros
+        from hermes1d import Solution
+        x = zeros(space.get_num_dofs())
+        x[idx] = 1.0
+        sln = Solution()
+        sln.set_fe_solution(space, x)
+        self.plot_function(sln)
+
+class ScalarView(View):
+
+    def __init__(self, title="ScalarView", x=-1, y=-1, width=500, height=500):
+        View.__init__(self, title, x, y, width, height)
+
     def show(self, f):
-        self.plot(f)
+        self.plot_function(f)
         self.fig.canvas.draw()
 
 class BaseView(ScalarView):
@@ -48,19 +70,22 @@ class BaseView(ScalarView):
             ScalarView.key_press_event(self, key)
 
     def update_solution(self):
-        from numpy import zeros
-        x = zeros(self.ndofs)
-        x[self.base_index] = 1.0
-        self.sln.set_fe_solution(self.space, x)
         self.fig.clf()
-        self.plot(self.sln)
+        self.plot_base_function(self.space, self.base_index)
         self.fig.gca().set_title("dof = %d" % self.base_index)
         self.fig.canvas.draw()
 
     def show(self, space):
-        from hermes1d import Solution
         self.space = space
         self.ndofs = space.get_num_dofs()
         self.base_index = 0
-        self.sln = Solution()
         self.update_solution()
+
+class MeshView(View):
+
+    def __init__(self, title="BaseView", x=-1, y=-1, width=500, height=500):
+        View.__init__(self, title, x, y, width, height)
+
+    def show(self, mesh):
+        self.plot_mesh(mesh)
+        self.fig.canvas.draw()

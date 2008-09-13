@@ -7,11 +7,8 @@ class ScalarView(View):
         from matplotlib.pyplot import figure
         self.fig = figure()
         def click(canvas, event):
-            #import pdb
-            #db.set_trace()
-            #rint dir(event)
-            #top
-            self.key_press_event(event.string)
+            key = canvas._get_key(event)
+            self.key_press_event(key)
         self.fig.canvas.connect("key_press_event", click)
 
     def key_press_event(self, key):

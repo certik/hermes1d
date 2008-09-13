@@ -96,39 +96,6 @@ class Solution(MeshFunction):
         self.mesh = space.mesh
         self.coeff = x
 
-class xShapeFunction(Function):
-    """
-    Deprecated.
-    """
-
-    def __init__(self, shapeset, idx, diff=0):
-        self._shapeset = shapeset
-        self._idx = idx
-        self._diff = diff
-
-    @property
-    def idx(self):
-        return self._idx
-
-    def domain_range(self):
-        return 0, 1
-
-    def diff(self):
-        return ShapeFunction(self._shapeset, self._idx, self._diff+1)
-
-    def f(self, x):
-        if self._diff == 0:
-            if self._idx == 0:
-                return 1-x
-            if self._idx == 1:
-                return x
-        elif self._diff == 1:
-            if self._idx == 0:
-                return -1
-            if self._idx == 1:
-                return 1
-        raise NotImplementedError()
-
 class BaseFunction(Function):
     """
     Represents one base function.

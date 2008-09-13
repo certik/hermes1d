@@ -26,13 +26,9 @@ class ScalarView(View):
         x, y = f.get_xy()
         self.fig.gca().plot(x, y)
 
-    def interact(self):
-        pass
-
-
     def show(self, f):
         self.plot(f)
-        self.interact()
+        self.fig.canvas.draw()
 
 class BaseView(ScalarView):
 
@@ -68,4 +64,3 @@ class BaseView(ScalarView):
         self.base_index = 0
         self.sln = Solution()
         self.update_solution()
-        ScalarView.interact(self)

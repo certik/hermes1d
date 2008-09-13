@@ -50,16 +50,10 @@ class Function(object):
         raise NotImplementedError()
 
     def integrate(self):
-        from numpy import arange
-        from scipy import trapz
         domain = self.domain_elements()
         integral = 0
         for e in domain:
-            N = 3
-            a, b = e.nodes[0].x, e.nodes[1].x
-            x = arange(a, b, float(b-a)/N)
-            y = [self.f(_x) for _x in x]
-            integral += trapz(y, x)
+            integral += e.integrate_function(self)
         return integral
 
     def __mul__(self, f):
@@ -71,7 +65,14 @@ class Mul(Function):
         self.args = (a, b)
 
     def domain_elements(self):
-        return self.args[0].domain_elements()
+        s = None
+        for x in self.args:
+            if s is None:
+                s = set(x.domain_elements())
+            else:
+                s = s.intersection(set(x.domain_elements()))
+        s = list(s)
+        return s
 
     def f(self, x):
         return self.args[0].f(x) * self.args[1].f(x)

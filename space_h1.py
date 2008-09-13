@@ -1,3 +1,6 @@
+BC_NEUMANN = 0
+BC_DIRICHLET = 1
+
 class H1Space(object):
     """
     Represents all the basis (shape) functions + their order.
@@ -16,6 +19,8 @@ class H1Space(object):
         self.shapeset = shapeset
         self.base_functions = None
         self.orders = None
+        self._bc_types = [None, None]
+        self._bc_values = [None, None]
 
     def ndofs(self):
         if self.base_functions is None:
@@ -27,6 +32,12 @@ class H1Space(object):
 
     def set_uniform_order(self, order):
         self.orders = [order]*self.mesh.get_num_elements()
+
+    def set_bc_types(self, a, b):
+        self._bc_types = [a, b]
+
+    def set_bc_values(self, a, b):
+        self._bc_values = [a, b]
 
     def build(self):
         """

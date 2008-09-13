@@ -96,3 +96,15 @@ class Elem(object):
         n1, n2 = self.nodes
         n1, n2 = n1.x, n2.x
         return float(x-n1)/(n2-n1)
+
+    def integrate_function(self, f):
+        """
+        Integrate the function "f" on the element.
+        """
+        from numpy import array
+        from scipy.integrate import quadrature
+        a, b = self.nodes[0].x, self.nodes[1].x
+        def func(x):
+            return array([f.f(y) for y in x])
+        val, err = quadrature(func, a, b)
+        return val

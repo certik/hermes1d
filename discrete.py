@@ -19,27 +19,35 @@ class DiscreteProblem:
         self.RHS = zeros((n), dtype="double")
 
     def assemble_matrix_and_rhs(self):
-        from numpy import zeros
         for e in self.space.mesh.iter_elements():
-            mat = zeros((2, 2), dtype="double")
-            shape_functions = self.space.shape_functions(e)
+            shape_functions = self.space.base_functions
             for phi_i in shape_functions:
                 for phi_j in shape_functions:
-                    i = phi_i.element_idx(e)
-                    j = phi_j.element_idx(e)
-                    mat[i, j] = self.bilinear_form(phi_i, phi_j)
-            self.insert_matrix(mat, self.space.dof_map(e))
-            #self.insert_vec(mat, e.dof_map)
+                    i = phi_i.global_dof()
+                    j = phi_j.global_dof()
+                    self.A[i, j] = self.bilinear_form(phi_i, phi_j)
+                    print i,j,self.A[i,j]
         # BC:
-        l = 0
-        r = len(self.RHS)-1
         penalty = 10**6
-        val1 = 0.0001
-        val2 = 1.0
-        self.A[l, l] = penalty
-        self.RHS[l] = val1*penalty
-        self.A[r, r] = penalty
-        self.RHS[r] = val2*penalty
+        from hermes1d import BC_DIRICHLET, BC_NEUMANN
+        if self.space._bc_types[0] == BC_DIRICHLET:
+            val = self.space._bc_values[0]
+            n = 0
+            self.A[n, n] = penalty
+            self.RHS[n] = val*penalty
+        if self.space._bc_types[1] == BC_DIRICHLET:
+            val = self.space._bc_values[1]
+            n = len(self.RHS)-1
+            self.A[n, n] = penalty
+            self.RHS[n] = val*penalty
+        if self.space._bc_types[0] == BC_NEUMANN:
+            val = self.space._bc_values[0]
+            n = 0
+            self.RHS[n] += val
+        if self.space._bc_types[1] == BC_NEUMANN:
+            val = self.space._bc_values[1]
+            n = len(self.RHS)-1
+            self.RHS[n] += -val
 
     def insert_matrix(self, mat, dof_map):
         for i in range(len(dof_map)):

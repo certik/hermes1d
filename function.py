@@ -88,6 +88,9 @@ class Derivative(Function):
     def f(self, x):
         return self._f.eval_deriv(x)
 
+    def eval_deriv(self, x, order=1):
+        return self._f.eval_deriv(x, 2)
+
     def domain_elements(self):
         return self._f.domain_elements()
 
@@ -96,6 +99,7 @@ class MeshFunction(Function):
     Represent any function that is defined as a linear combination of
     BaseFunctions.
     """
+    pass
 
     #def f(self, x):
     #    e = self.mesh.get_element_x(x)
@@ -115,6 +119,12 @@ class Solution(MeshFunction):
         val = 0.
         for c, b in zip(self.coeff, self.space.base_functions):
             val += c*b.f(x)
+        return val
+
+    def eval_deriv(self, x, order=1):
+        val = 0.
+        for c, b in zip(self.coeff, self.space.base_functions):
+            val += c*b.eval_deriv(x, order)
         return val
 
 class BaseFunction(Function):
@@ -164,18 +174,17 @@ class BaseFunction(Function):
                 return -1
             if idx == 1:
                 return 1
+        elif diff > 1:
+            return 0.
         raise NotImplementedError()
 
     def f(self, x):
-        e = self.mesh.get_element_by_coor(x)
-        if e in self.els:
-            return self.values(e.real2reference(x), self.els[e], 0)
-        else:
-            return 0.
+        # order=0 means the function value:
+        return self.eval_deriv(x, order=0)
 
-    def eval_deriv(self, x):
+    def eval_deriv(self, x, order=1):
         e = self.mesh.get_element_by_coor(x)
         if e in self.els:
-            return self.values(e.real2reference(x), self.els[e], 1)
+            return self.values(e.real2reference(x), self.els[e], order)
         else:
             return 0.

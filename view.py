@@ -22,6 +22,10 @@ class View(object):
 
     def key_press_event(self, key):
         if key == "q":
+            # comment the following two lines if you just want to close the
+            # window:
+            import sys
+            sys.exit()
             import pylab
             pylab.close(self.fig)
 

@@ -61,12 +61,18 @@ class Mul(Function):
         return self.args[0].f(x) * self.args[1].f(x)
 
 class Derivative(Function):
+    """
+    Represents a derivative.
+    """
 
     def __init__(self, f):
-        self.f = f
+        self._f = f
+
+    def f(self, x):
+        return self._f.eval_deriv(x)
 
     def domain_elements(self):
-        return self.f.domain_elements()
+        return self._f.domain_elements()
 
 class MeshFunction(Function):
     """
@@ -173,7 +179,7 @@ class BaseFunction(Function):
                 return 1
         raise NotImplementedError()
 
-    def f(self, x, diff=0):
+    def fd(self, x, diff=0):
         d = {}
         for e, idx in self.els:
             d[e] = idx
@@ -183,3 +189,9 @@ class BaseFunction(Function):
             return self.fx(x, idx, diff)
         else:
             return 0.
+
+    def f(self, x):
+        return self.fd(x, 0)
+
+    def eval_deriv(self, x):
+        return self.fd(x, 1)

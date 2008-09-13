@@ -186,6 +186,13 @@ class BaseFunction(Function):
     def eval_deriv(self, x, order=1):
         e = self.mesh.get_element_by_coor(x)
         if e in self.els:
-            return self.values(e.real2reference(x), self.els[e], order)
+            J = 1.
+            if order == 1:
+                # XXX: make this more general:
+                # this is needed because derivatives need to be transformed.
+                a, b = e.nodes[0].x, e.nodes[1].x
+                h = b-a
+                J = 1/h
+            return J*self.values(e.real2reference(x), self.els[e], order)
         else:
             return 0.

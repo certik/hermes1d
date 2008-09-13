@@ -22,11 +22,13 @@ class DiscreteProblem:
         for e in self.space.mesh.iter_elements():
             shape_functions = self.space.base_functions
             for phi_i in shape_functions:
+                i = phi_i.global_dof()
                 for phi_j in shape_functions:
-                    i = phi_i.global_dof()
                     j = phi_j.global_dof()
                     self.A[i, j] = self.bilinear_form(phi_i, phi_j)
-                    print i,j,self.A[i,j]
+                self.RHS[i] = self.linear_form(phi_i)
+        #print self.A
+        #print self.RHS
         # BC:
         penalty = 10**6
         from hermes1d import BC_DIRICHLET, BC_NEUMANN

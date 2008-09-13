@@ -46,7 +46,7 @@ class H1Space(object):
         """
         from hermes1d import BaseFunction
         b = []
-        dof = -1
+        dof = 0
         f = BaseFunction(self.mesh, self.shapeset, dof)
         for e in self.mesh.iter_elements():
             f.add_element(e, 0)
@@ -54,8 +54,8 @@ class H1Space(object):
             dof += 1
             f = BaseFunction(self.mesh, self.shapeset, dof)
             f.add_element(e, 1)
-        del b[0]
-        #b.append(f)
+        #del b[0]
+        b.append(f)
         self.base_functions = b
 
     def get_base_function(self, idx):

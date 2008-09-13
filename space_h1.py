@@ -7,6 +7,9 @@ class H1Space(object):
     def ndofs(self):
         return self.mesh.len()+1
 
+    def get_num_dofs(self):
+        return self.ndofs()
+
     def set_uniform_order(self, order):
         pass
 

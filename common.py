@@ -1,2 +1,3 @@
 def finalize():
-    pass
+    import pylab
+    pylab.show()

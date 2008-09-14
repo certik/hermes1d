@@ -82,6 +82,14 @@ class Function(object):
     def __neg__(self):
         return (-1) * self
 
+    def __add__(self, a):
+        a = convert(a, self.mesh)
+        return Add(self, a)
+
+    def __radd__(self, a):
+        a = convert(a, self.mesh)
+        return Add(a, self)
+
     def __sub__(self, a):
         a = convert(a, self.mesh)
         return Add(self, -a)

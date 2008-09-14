@@ -289,27 +289,24 @@ class BaseFunction(Function):
         return self.eval_deriv(x, order=0)
 
     def get_xy(self, steps=5):
-        def interp(a, b, steps):
-            x = [a]
-            dx = float(b-a)/steps
-            for i in range(steps):
-                x.append(x[-1]+dx)
-            return x
-
-        x = []
-        for e in self.mesh.iter_elements():
-            if e in self.els:
-                idx = self.els[e]
-                if idx in [0, 1]:
-                    steps = 1
-                else:
-                    steps = idx*10
-                x.extend(interp(e.nodes[0].x, e.nodes[1].x, steps))
+        from numpy import arange
+        x0 = []
+        y0 = []
+        for e in self.els:
+            idx = self.els[e]
+            if idx in [0, 1]:
+                steps = 3
             else:
-                x.extend((e.nodes[0].x, e.nodes[1].x))
-        x.sort()
-        y = [self.f(c) for c in x]
-        return x, y
+                steps = idx*10
+            a = e.nodes[0].x
+            b = e.nodes[1].x
+            x = arange(a, b, (b-a)/steps)
+            #print x[1]
+            #print self.mesh.get_element_by_coor(x[1]), e
+            y = [self.values(e.real2reference(xx), idx, 1) for xx in x]
+            x0.extend(x)
+            y0.extend(y)
+        return x0, y0
 
     def eval_deriv(self, x, order=1):
         e = self.mesh.get_element_by_coor(x)

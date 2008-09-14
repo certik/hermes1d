@@ -197,14 +197,16 @@ class BaseFunction(Function):
     def eval_deriv(self, x, order=1):
         e = self.mesh.get_element_by_coor(x)
         if e is not None and e in self.els:
-            J = 1.
-            if order == 1:
-                # XXX: make this more general:
-                # this is needed because derivatives need to be transformed.
-                a, b = e.nodes[0].x, e.nodes[1].x
-                h = b-a
-                J = 1/h
-                stop
+            if order == 0:
+                J = 1.
+            elif order == 1:
+                J = e.get_jacobian()*2
+            elif order == 2:
+                # XXX: verify:
+                J = e.get_jacobian()**2
+            else:
+                raise NotImplementedError()
+            #print J*self.values(e.real2reference(x), self.els[e], order)
             return J*self.values(e.real2reference(x), self.els[e], order)
         else:
             return 0.

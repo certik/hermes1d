@@ -61,8 +61,8 @@ class DiscreteProblem(object):
                 self.A[dof_map[i], dof_map[j]] += mat[i, j]
 
     def solve_system(self, sln):
-        #print self.A
-        #print self.RHS
+        print self.A
+        print self.RHS
         from scipy.linalg import solve
         x = solve(self.A, self.RHS)
         #print x

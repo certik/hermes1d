@@ -41,9 +41,11 @@ class H1Shapeset(object):
                 raise NotImplementedError("Such idx is not implemented (yet).")
         elif diff == 1:
             if idx == 0:
-                return -1
-            if idx == 1:
-                return 1
+                return -0.5
+            elif idx == 1:
+                return 0.5
+            else:
+                raise NotImplementedError("Such idx is not implemented (yet).")
         elif diff > 1:
             return 0.
         raise NotImplementedError()

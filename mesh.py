@@ -107,6 +107,15 @@ class Elem(object):
         d = n2 - n1
         return 2*(x-half)/d
 
+    def get_jacobian(self):
+        """
+        Returns the Jacobian of the transformation.
+        """
+        a, b = self.nodes[0].x, self.nodes[1].x
+        h = (b-a)/2
+        J = 1/h
+        return J
+
     def integrate_function(self, f):
         """
         Integrate the function "f" on the element.
@@ -115,6 +124,10 @@ class Elem(object):
         from scipy.integrate import quadrature
         a, b = self.nodes[0].x, self.nodes[1].x
         def func(x):
+            #print x
+            #print array([f.f(y) for y in x])
             return array([f.f(y) for y in x])
         val, err = quadrature(func, a, b)
+        #print val
+        #stop
         return val

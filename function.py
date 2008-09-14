@@ -200,10 +200,10 @@ class BaseFunction(Function):
             if order == 0:
                 J = 1.
             elif order == 1:
-                J = e.get_jacobian()*2
+                J = 1./e.get_jacobian()
             elif order == 2:
                 # XXX: verify:
-                J = e.get_jacobian()**2
+                J = 1./e.get_jacobian()**2
             else:
                 raise NotImplementedError()
             #print J*self.values(e.real2reference(x), self.els[e], order)

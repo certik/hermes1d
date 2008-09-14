@@ -113,7 +113,7 @@ class Elem(object):
         """
         a, b = self.nodes[0].x, self.nodes[1].x
         h = (b-a)/2
-        J = 1/h
+        J = h
         return J
 
     def integrate_function(self, f):
@@ -128,6 +128,6 @@ class Elem(object):
             #print array([f.f(y) for y in x])
             return array([f.f(y) for y in x])
         val, err = quadrature(func, a, b)
-        #print val
+        #print val, a, b
         #stop
         return val

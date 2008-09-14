@@ -115,6 +115,9 @@ class Pow(Function):
         self.args = (a, b)
         self.mesh = a.mesh
 
+    def domain_elements(self):
+        return self.args[0].domain_elements()
+
     def f(self, x):
         a, b = self.args
         return a.f(x) ** b.f(x)
@@ -160,6 +163,22 @@ class ConstantFunction(Function):
     def f(self, x):
         return self._c
 
+class CustomFunction(Function):
+    """
+    Represents a constant function.
+    """
+
+    def __init__(self, F, space):
+        self._F = F
+        self.space = space
+        self.mesh = space.mesh
+
+    def domain_elements(self):
+        return self.mesh.active_elements
+
+    def f(self, x):
+        return self._F(x)
+
 class LinearFunction(Function):
     """
     Represents an "x" function, i.e. y(x) = x.
@@ -170,6 +189,9 @@ class LinearFunction(Function):
 
     def f(self, x):
         return x
+
+    def domain_elements(self):
+        return self.mesh.active_elements
 
 
 class Derivative(Function):

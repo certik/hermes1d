@@ -44,6 +44,8 @@ class H1Shapeset(object):
                 return -0.5
             elif idx == 1:
                 return 0.5
+            elif idx == 2:
+                return 2*x*sqrt(3./2)/2
             else:
                 raise NotImplementedError("Such idx is not implemented (yet).")
         elif diff > 1:

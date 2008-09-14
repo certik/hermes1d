@@ -56,13 +56,76 @@ class Function(object):
             integral += e.integrate_function(self)
         return integral
 
+    def is_zero(self, tol=1e-6):
+        """
+        Compares "self" with a zero function.
+
+        Currently this is only done by comparing node values.
+        """
+        for n in self.mesh.nodes:
+            if self.f(n.x) > tol:
+                return False
+        return True
+
     def __mul__(self, f):
+        f = convert(f, self.mesh)
         return Mul(self, f)
+
+    def __rmul__(self, f):
+        f = convert(f, self.mesh)
+        return Mul(f, self)
+
+    def __pow__(self, a):
+        a = convert(a, self.mesh)
+        return Pow(self, a)
+
+    def __neg__(self):
+        return (-1) * self
+
+    def __sub__(self, a):
+        a = convert(a, self.mesh)
+        return Add(self, -a)
+
+    def __rsub__(self, a):
+        a = convert(a, self.mesh)
+        return Add(a, -self)
+
+    def __div__(self, a):
+        a = convert(a, self.mesh)
+        return self * (a ** (-1))
+
+def convert(a, mesh=None):
+    if isinstance(a, Function):
+        return a
+    elif isinstance(a, (int, long, float)):
+        return ConstantFunction(mesh, a)
+    raise NotImplementedError("Don't know how to convert to Function.")
+
+class Pow(Function):
+
+    def __init__(self, a, b):
+        self.args = (a, b)
+        self.mesh = a.mesh
+
+    def f(self, x):
+        a, b = self.args
+        return a.f(x) ** b.f(x)
+
+class Add(Function):
+
+    def __init__(self, a, b):
+        self.args = (a, b)
+        self.mesh = a.mesh
+
+    def f(self, x):
+        a, b = self.args
+        return a.f(x) + b.f(x)
 
 class Mul(Function):
 
     def __init__(self, a, b):
         self.args = (a, b)
+        self.mesh = a.mesh
 
     def domain_elements(self):
         s = None
@@ -76,6 +139,30 @@ class Mul(Function):
 
     def f(self, x):
         return self.args[0].f(x) * self.args[1].f(x)
+
+class ConstantFunction(Function):
+    """
+    Represents a constant function.
+    """
+
+    def __init__(self, mesh, c):
+        self._c = c
+        self.mesh = mesh
+
+    def f(self, x):
+        return self._c
+
+class LinearFunction(Function):
+    """
+    Represents an "x" function, i.e. y(x) = x.
+    """
+
+    def __init__(self, mesh):
+        self.mesh = mesh
+
+    def f(self, x):
+        return x
+
 
 class Derivative(Function):
     """

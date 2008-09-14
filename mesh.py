@@ -49,7 +49,13 @@ class Mesh(object):
         for e in self.active_elements:
             if e.contains(x):
                 return e
-        raise Exception("No element contains x.")
+        # return None instead of an exception
+        #raise Exception("No element contains x=%f." % x)
+
+    def get_min_max(self):
+        n1 = self.active_elements[0].nodes[0].x
+        n2 = self.active_elements[-1].nodes[1].x
+        return n1, n2
 
 
 class Node(object):
@@ -91,11 +97,15 @@ class Elem(object):
     def real2reference(self, x):
         """
         Converts "x" to local coordinates (reference element).
+
+        -1 <= real2reference(x) <= 1
         """
 
         n1, n2 = self.nodes
         n1, n2 = n1.x, n2.x
-        return float(x-n1)/(n2-n1)
+        half = (n1+n2)/2
+        d = n2 - n1
+        return 2*(x-half)/d
 
     def integrate_function(self, f):
         """

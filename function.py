@@ -165,27 +165,38 @@ class BaseFunction(Function):
         self.els[e] = idx
 
     def values(self, x, idx, diff=0):
-        if diff == 0:
-            if idx == 0:
-                return 1-x
-            if idx == 1:
-                return x
-        elif diff == 1:
-            if idx == 0:
-                return -1
-            if idx == 1:
-                return 1
-        elif diff > 1:
-            return 0.
-        raise NotImplementedError()
+        return self.shapeset.get_value_reference(x, idx, diff)
 
     def f(self, x):
         # order=0 means the function value:
         return self.eval_deriv(x, order=0)
 
+    def get_xy(self, steps=5):
+        def interp(a, b, steps):
+            x = [a]
+            dx = float(b-a)/steps
+            for i in range(steps):
+                x.append(x[-1]+dx)
+            return x
+
+        x = []
+        for e in self.mesh.iter_elements():
+            if e in self.els:
+                idx = self.els[e]
+                if idx in [0, 1]:
+                    steps = 1
+                else:
+                    steps = idx*10
+                x.extend(interp(e.nodes[0].x, e.nodes[1].x, steps))
+            else:
+                x.extend((e.nodes[0].x, e.nodes[1].x))
+        x.sort()
+        y = [self.f(c) for c in x]
+        return x, y
+
     def eval_deriv(self, x, order=1):
         e = self.mesh.get_element_by_coor(x)
-        if e in self.els:
+        if e is not None and e in self.els:
             J = 1.
             if order == 1:
                 # XXX: make this more general:
@@ -193,6 +204,7 @@ class BaseFunction(Function):
                 a, b = e.nodes[0].x, e.nodes[1].x
                 h = b-a
                 J = 1/h
+                stop
             return J*self.values(e.real2reference(x), self.els[e], order)
         else:
             return 0.

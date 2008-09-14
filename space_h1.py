@@ -48,12 +48,19 @@ class H1Space(object):
         b = []
         dof = 0
         f = BaseFunction(self.mesh, self.shapeset, dof)
-        for e in self.mesh.iter_elements():
+        for i, e in enumerate(self.mesh.iter_elements()):
+            order = self.orders[i]
+            assert order >= 1
             f.add_element(e, 0)
             b.append(f)
             dof += 1
             f = BaseFunction(self.mesh, self.shapeset, dof)
             f.add_element(e, 1)
+            for ii in range(2, order+1):
+                dof += 1
+                bubble = BaseFunction(self.mesh, self.shapeset, dof)
+                bubble.add_element(e, ii)
+                b.append(bubble)
         #del b[0]
         b.append(f)
         self.base_functions = b

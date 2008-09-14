@@ -79,6 +79,8 @@ class BaseView(ScalarView):
         self.plot_function(self.space.get_base_function(self.base_index))
         self.plot_mesh(self.space.mesh)
         self.fig.gca().set_title("dof = %d" % self.base_index)
+        self.fig.gca().set_xlim(self.space.mesh.get_min_max())
+        self.fig.gca().set_ylim((-1, 1))
         self.fig.canvas.draw()
 
     def show(self, space):

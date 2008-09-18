@@ -1,4 +1,4 @@
-from scipy.integrate import quadrature
+from integrate import quadrature
 
 class Mesh(object):
     """

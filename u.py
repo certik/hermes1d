@@ -80,4 +80,4 @@ mat1.show(dp)
 #view = ScalarView("sol''", 2*w, h, w, h)
 #view.show(sln.diff().diff())
 
-#finalize()
+finalize()

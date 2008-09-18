@@ -126,11 +126,11 @@ class Elem(object):
         from numpy import array
         a, b = self.nodes[0].x, self.nodes[1].x
         def func(x):
-            return f.f_array(x, el=self, reference=False)
+            return f.f_array(x, el=self, reference=True)
             #print x
             #print array([f.f(y) for y in x])
             #return array([f.f(y) for y in x])
-        val, err = quadrature(func, a, b, reference=False)
+        val, err = quadrature(func, a, b, reference=True)
         #print val, a, b
         #stop
         return val

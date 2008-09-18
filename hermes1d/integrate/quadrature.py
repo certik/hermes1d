@@ -5,13 +5,23 @@
 __all__ = ['fixed_quad','quadrature','romberg','trapz','simps','romb',
            'cumtrapz','newton_cotes','composite']
 
-from scipy.special.orthogonal import p_roots
+from scipy.special.orthogonal import p_roots as p_roots_orig
 from scipy.special import gammaln
 from numpy import sum, ones, add, diff, isinf, isscalar, \
      asarray, real, trapz, arange, empty
 import scipy as sp
 import numpy as np
 
+_cache = {}
+@profile
+def p_roots(n):
+    try:
+        return _cache[n]
+    except KeyError:
+        _cache[n] = p_roots_orig(n)
+        return _cache[n]
+
+@profile
 def fixed_quad(func,a,b,args=(),n=5):
     """Compute a definite integral using fixed-order Gaussian quadrature.
 

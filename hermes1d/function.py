@@ -27,8 +27,11 @@ class Function(object):
     def __call__(self, x):
         return self.f(x)
 
-    def f(self, x):
+    def f(self, x, el=None):
         raise NotImplementedError()
+
+    def f_array(self, x, el=None):
+        return [self.f(y, el=el) for y in x]
 
     def get_xy(self, steps=5):
         def interp(a, b, steps):
@@ -129,9 +132,9 @@ class Add(Function):
         self.args = (a, b)
         self.mesh = a.mesh
 
-    def f(self, x):
+    def f(self, x, el=None):
         a, b = self.args
-        return a.f(x) + b.f(x)
+        return a.f(x, el) + b.f(x, el)
 
 class Mul(Function):
 
@@ -149,8 +152,8 @@ class Mul(Function):
         s = list(s)
         return s
 
-    def f(self, x):
-        return self.args[0].f(x) * self.args[1].f(x)
+    def f(self, x, el=None):
+        return self.args[0].f(x, el) * self.args[1].f(x, el)
 
 class ConstantFunction(Function):
     """
@@ -161,7 +164,7 @@ class ConstantFunction(Function):
         self._c = c
         self.mesh = mesh
 
-    def f(self, x):
+    def f(self, x, el=None):
         return self._c
 
 class CustomFunction(Function):
@@ -177,7 +180,7 @@ class CustomFunction(Function):
     def domain_elements(self):
         return self.mesh.active_elements
 
-    def f(self, x):
+    def f(self, x, el=None):
         return self._F(x)
 
 class LinearFunction(Function):
@@ -204,8 +207,8 @@ class Derivative(Function):
         self._f = f
         self.mesh = f.mesh
 
-    def f(self, x):
-        return self._f.eval_deriv(x)
+    def f(self, x, el=None):
+        return self._f.eval_deriv(x, el=el)
 
     def eval_deriv(self, x, order=1):
         return self._f.eval_deriv(x, 2)
@@ -285,9 +288,9 @@ class BaseFunction(Function):
     def values(self, x, idx, diff=0):
         return self.shapeset.get_value_reference(x, idx, diff)
 
-    def f(self, x):
+    def f(self, x, el=None):
         # order=0 means the function value:
-        return self.eval_deriv(x, order=0)
+        return self.eval_deriv(x, order=0, el=el)
 
     def get_xy(self, steps=5):
         from numpy import arange
@@ -309,8 +312,12 @@ class BaseFunction(Function):
             y0.extend(y)
         return x0, y0
 
-    def eval_deriv(self, x, order=1):
-        e = self.mesh.get_element_by_coor(x)
+    @profile
+    def eval_deriv(self, x, order=1, el=None):
+        if el is None:
+            e = self.mesh.get_element_by_coor(x)
+        else:
+            e = el
         if e is not None and e in self.els:
             if order == 0:
                 J = 1.

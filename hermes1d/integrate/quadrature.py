@@ -6,7 +6,7 @@ from scipy.special.orthogonal import p_roots as p_roots_orig
 from numpy import sum, isinf, isscalar, asarray, real, empty
 
 _cache = {}
-@profile
+#@profile
 def p_roots(n):
     try:
         return _cache[n]
@@ -14,7 +14,7 @@ def p_roots(n):
         _cache[n] = p_roots_orig(n)
         return _cache[n]
 
-@profile
+#@profile
 def fixed_quad(func,a,b,args=(),n=5, reference=False):
     """Compute a definite integral using fixed-order Gaussian quadrature.
 
@@ -47,7 +47,7 @@ def fixed_quad(func,a,b,args=(),n=5, reference=False):
         x = (b-a)*(x+1)/2.0 + a
     return (b-a)/2.0*sum(w*func(x,*args),0)
 
-@profile
+#@profile
 def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, reference=False):
     """Compute a definite integral using fixed-tolerance Gaussian quadrature.
 

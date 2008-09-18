@@ -52,7 +52,7 @@ class Function(object):
     def domain_range(self):
         raise NotImplementedError()
 
-    @profile
+    #@profile
     def integrate(self):
         domain = self.domain_elements()
         integral = 0

@@ -2,7 +2,8 @@ def prof(fn):
     return fn
 
 import __builtin__
-__builtin__.__dict__['profile'] = prof
+if not "profile" in __builtin__.__dict__:
+    __builtin__.__dict__['profile'] = prof
 
 from common import *
 from mesh import *

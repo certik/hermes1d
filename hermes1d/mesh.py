@@ -118,7 +118,7 @@ class Elem(object):
         J = h
         return J
 
-    #@profile
+    @profile
     def integrate_function(self, f):
         """
         Integrate the function "f" on the element.

@@ -80,6 +80,7 @@ def vectorize1(func, args=(), vec_func=False):
             return output
     return vfunc
 
+@profile
 def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, vec_func=True):
     """Compute a definite integral using fixed-tolerance Gaussian quadrature.
 

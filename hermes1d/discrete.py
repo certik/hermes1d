@@ -21,7 +21,7 @@ class DiscreteProblem(object):
         self.A = zeros((n, n), dtype="double")
         self.RHS = zeros((n), dtype="double")
 
-    #@profile
+    @profile
     def assemble_matrix_and_rhs(self):
         count = 0
         n = len(self.space.mesh.active_elements)

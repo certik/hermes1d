@@ -15,7 +15,7 @@ def p_roots(n):
         return _cache[n]
 
 @profile
-def fixed_quad(func,a,b,args=(),n=5):
+def fixed_quad(func,a,b,args=(),n=5, reference=False):
     """Compute a definite integral using fixed-order Gaussian quadrature.
 
   Description:
@@ -30,20 +30,12 @@ def fixed_quad(func,a,b,args=(),n=5):
     b -- upper limit of integration
     args -- extra arguments to pass to function.
     n -- order of quadrature integration.
+    reference -- evaluate func at reference points
 
   Outputs: (val, None)
 
     val -- Gaussian quadrature approximation to the integral.
 
-  See also:
-    
-    quad - adaptive quadrature using QUADPACK
-    dblquad, tplquad - double and triple integrals
-    romberg - adaptive Romberg quadrature
-    quadrature - adaptive Gaussian quadrature
-    romb, simps, trapz - integrators for sampled data
-    cumtrapz - cumulative integration for sampled data
-    ode, odeint - ODE integrators
     """
     [x,w] = p_roots(n)
     x = real(x)
@@ -51,11 +43,12 @@ def fixed_quad(func,a,b,args=(),n=5):
     if ainf or binf:
         raise ValueError, "Gaussian quadrature is only available for " \
               "finite limits."
-    y = (b-a)*(x+1)/2.0 + a
-    return (b-a)/2.0*sum(w*func(y,*args),0), None
+    if not reference:
+        x = (b-a)*(x+1)/2.0 + a
+    return (b-a)/2.0*sum(w*func(x,*args),0)
 
 @profile
-def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, vec_func=True):
+def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, reference=False):
     """Compute a definite integral using fixed-tolerance Gaussian quadrature.
 
   Description:
@@ -94,7 +87,7 @@ def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, vec_func=True):
     val = err
     n = 1
     while (err > tol) and (n < maxiter):
-        newval = fixed_quad(func, a, b, (), n)[0]
+        newval = fixed_quad(func, a, b, (), n, reference)
         err = abs(newval-val)
         val = newval
         n = n + 1

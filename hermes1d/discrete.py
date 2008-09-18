@@ -21,9 +21,15 @@ class DiscreteProblem(object):
         self.A = zeros((n, n), dtype="double")
         self.RHS = zeros((n), dtype="double")
 
+    #@profile
     def assemble_matrix_and_rhs(self):
+        count = 0
+        n = len(self.space.mesh.active_elements)
         for e in self.space.mesh.iter_elements():
+            count += 1
+            print "done: %f%%" % (100*float(count)/n)
             shape_functions = self.space.base_functions
+            n = len(shape_functions)
             for phi_i in shape_functions:
                 i = phi_i.global_dof()
                 for phi_j in shape_functions:

@@ -1,3 +1,5 @@
+from scipy.integrate import quadrature
+
 class Mesh(object):
     """
     Mesh represents a FEM mesh with elements (Elem), but it doesn't have
@@ -116,12 +118,12 @@ class Elem(object):
         J = h
         return J
 
+    #@profile
     def integrate_function(self, f):
         """
         Integrate the function "f" on the element.
         """
         from numpy import array
-        from scipy.integrate import quadrature
         a, b = self.nodes[0].x, self.nodes[1].x
         def func(x):
             #print x

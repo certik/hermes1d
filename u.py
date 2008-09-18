@@ -20,7 +20,8 @@ mesh.set_interval(-1, 1)
 mesh.refine_all_elements()
 mesh.refine_all_elements()
 mesh.refine_all_elements()
-#mesh.refine_all_elements()
+mesh.refine_all_elements()
+mesh.refine_all_elements()
 shapeset = H1Shapeset()
 
 print "Creating base functions"

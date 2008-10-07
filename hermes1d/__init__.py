@@ -1,3 +1,10 @@
+def prof(fn):
+    return fn
+
+import __builtin__
+if not "profile" in __builtin__.__dict__:
+    __builtin__.__dict__['profile'] = prof
+
 from common import *
 from mesh import *
 from shapeset_h1 import *

@@ -27,8 +27,11 @@ class Function(object):
     def __call__(self, x):
         return self.f(x)
 
-    def f(self, x):
+    def f(self, x, el=None, reference=False):
         raise NotImplementedError()
+
+    def f_array(self, x, el=None, reference=False):
+        return [self.f(y, el=el, reference=reference) for y in x]
 
     def get_xy(self, steps=5):
         def interp(a, b, steps):
@@ -119,7 +122,7 @@ class Pow(Function):
     def domain_elements(self):
         return self.args[0].domain_elements()
 
-    def f(self, x):
+    def f(self, x, reference=False):
         a, b = self.args
         return a.f(x) ** b.f(x)
 
@@ -129,9 +132,9 @@ class Add(Function):
         self.args = (a, b)
         self.mesh = a.mesh
 
-    def f(self, x):
+    def f(self, x, el=None, reference=False):
         a, b = self.args
-        return a.f(x) + b.f(x)
+        return a.f(x, el) + b.f(x, el)
 
 class Mul(Function):
 
@@ -149,8 +152,8 @@ class Mul(Function):
         s = list(s)
         return s
 
-    def f(self, x):
-        return self.args[0].f(x) * self.args[1].f(x)
+    def f(self, x, el=None, reference=False):
+        return self.args[0].f(x, el, reference) * self.args[1].f(x, el, reference)
 
 class ConstantFunction(Function):
     """
@@ -161,7 +164,7 @@ class ConstantFunction(Function):
         self._c = c
         self.mesh = mesh
 
-    def f(self, x):
+    def f(self, x, el=None, reference=False):
         return self._c
 
 class CustomFunction(Function):
@@ -177,7 +180,7 @@ class CustomFunction(Function):
     def domain_elements(self):
         return self.mesh.active_elements
 
-    def f(self, x):
+    def f(self, x, el=None, reference=False):
         return self._F(x)
 
 class LinearFunction(Function):
@@ -188,7 +191,7 @@ class LinearFunction(Function):
     def __init__(self, mesh):
         self.mesh = mesh
 
-    def f(self, x):
+    def f(self, x, reference=False):
         return x
 
     def domain_elements(self):
@@ -204,8 +207,8 @@ class Derivative(Function):
         self._f = f
         self.mesh = f.mesh
 
-    def f(self, x):
-        return self._f.eval_deriv(x)
+    def f(self, x, el=None, reference=False):
+        return self._f.eval_deriv(x, el=el, reference=reference)
 
     def eval_deriv(self, x, order=1):
         return self._f.eval_deriv(x, 2)
@@ -234,7 +237,7 @@ class Solution(MeshFunction):
         self.mesh = space.mesh
         self.coeff = x
 
-    def f(self, x):
+    def f(self, x, reference=False):
         val = 0.
         for c, b in zip(self.coeff, self.space.base_functions):
             val += c*b.f(x)
@@ -285,9 +288,9 @@ class BaseFunction(Function):
     def values(self, x, idx, diff=0):
         return self.shapeset.get_value_reference(x, idx, diff)
 
-    def f(self, x):
+    def f(self, x, el=None, reference=False):
         # order=0 means the function value:
-        return self.eval_deriv(x, order=0)
+        return self.eval_deriv(x, order=0, el=el, reference=reference)
 
     def get_xy(self, steps=5):
         from numpy import arange
@@ -309,8 +312,12 @@ class BaseFunction(Function):
             y0.extend(y)
         return x0, y0
 
-    def eval_deriv(self, x, order=1):
-        e = self.mesh.get_element_by_coor(x)
+    @profile
+    def eval_deriv(self, x, order=1, el=None, reference=False):
+        if el is None:
+            e = self.mesh.get_element_by_coor(x)
+        else:
+            e = el
         if e is not None and e in self.els:
             if order == 0:
                 J = 1.
@@ -321,7 +328,8 @@ class BaseFunction(Function):
                 J = 1./e.get_jacobian()**2
             else:
                 raise NotImplementedError()
-            #print J*self.values(e.real2reference(x), self.els[e], order)
-            return J*self.values(e.real2reference(x), self.els[e], order)
+            if not reference:
+                x = e.real2reference(x)
+            return J*self.values(x, self.els[e], order)
         else:
             return 0.

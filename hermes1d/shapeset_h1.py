@@ -5,6 +5,7 @@ class H1Shapeset(object):
     Represents shape functions defined on the reference element.
     """
 
+    #@profile
     def get_value_reference(self, x, idx, diff=0):
         """
         Returns the value (diff=0) of a shapefunction on a reference element.

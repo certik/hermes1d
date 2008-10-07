@@ -1,4 +1,4 @@
-from scipy.integrate import quadrature
+from integrate import quadrature
 
 class Mesh(object):
     """
@@ -118,7 +118,7 @@ class Elem(object):
         J = h
         return J
 
-    #@profile
+    @profile
     def integrate_function(self, f):
         """
         Integrate the function "f" on the element.
@@ -126,10 +126,11 @@ class Elem(object):
         from numpy import array
         a, b = self.nodes[0].x, self.nodes[1].x
         def func(x):
+            return f.f_array(x, el=self, reference=True)
             #print x
             #print array([f.f(y) for y in x])
-            return array([f.f(y) for y in x])
-        val, err = quadrature(func, a, b)
+            #return array([f.f(y) for y in x])
+        val, err = quadrature(func, a, b, reference=True)
         #print val, a, b
         #stop
         return val

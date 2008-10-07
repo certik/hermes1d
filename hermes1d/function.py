@@ -286,6 +286,15 @@ class BaseFunction(Function):
         self.els[e] = idx
 
     def values(self, x, idx, diff=0):
+        """
+        Returns the value of the shapefunction on the reference element.
+
+        x .... the *reference* coordinate point.
+        idx .. the index of the shapefunction on the reference element.
+
+        See the docstring of get_value_reference() for more info.
+        Use e.real2reference() to convert from the real to reference system.
+        """
         return self.shapeset.get_value_reference(x, idx, diff)
 
     def f(self, x, el=None, reference=False):
@@ -320,7 +329,7 @@ class BaseFunction(Function):
             x = arange(a, b, (b-a)/steps)
             #print x[1]
             #print self.mesh.get_element_by_coor(x[1]), e
-            y = [self.values(e.real2reference(xx), idx, 1) for xx in x]
+            y = [self.values(e.real2reference(xx), idx, 0) for xx in x]
             x0.extend(x)
             y0.extend(y)
         return sort_xy(x0, y0)

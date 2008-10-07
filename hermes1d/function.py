@@ -293,13 +293,26 @@ class BaseFunction(Function):
         return self.eval_deriv(x, order=0, el=el, reference=reference)
 
     def get_xy(self, steps=5):
+        def unzip(l):
+            "the opposite of zip."
+            a = []
+            b = []
+            for t in l:
+                a.append(t[0])
+                b.append(t[1])
+            return a, b
+        def sort_xy(x, y):
+            "Sorts x, y according to x."
+            l = zip(x, y)
+            l.sort(key=lambda x:x[0])
+            return unzip(l)
         from numpy import arange
         x0 = []
         y0 = []
         for e in self.els:
             idx = self.els[e]
             if idx in [0, 1]:
-                steps = 3
+                steps = 6
             else:
                 steps = idx*10
             a = e.nodes[0].x
@@ -310,7 +323,7 @@ class BaseFunction(Function):
             y = [self.values(e.real2reference(xx), idx, 1) for xx in x]
             x0.extend(x)
             y0.extend(y)
-        return x0, y0
+        return sort_xy(x0, y0)
 
     @profile
     def eval_deriv(self, x, order=1, el=None, reference=False):

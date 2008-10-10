@@ -50,7 +50,9 @@ dp.set_bilinear_form(0, 0, bilinear_form)
 dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f
-print f(10)
+from numpy import array
+a = array([1, 2])
+print f(a)
 
 #sln = Solution()
 #dp.create_matrix()

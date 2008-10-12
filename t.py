@@ -51,7 +51,7 @@ dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f
 from numpy import array
-a = array([1, 2])
+a = array([1, 2], dtype="double")
 print f(a)
 
 #sln = Solution()

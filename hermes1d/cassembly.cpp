@@ -1,6 +1,8 @@
 #include "cassembly.h"
+#include "stdio.h"
 
-int A::test(int a)
+void A::print_info()
 {
-    return a+5;
+    printf("nmesh: %d\n", this->nmesh);
+    printf("%f %f\n", this->mesh[0], this->mesh[1]);
 }

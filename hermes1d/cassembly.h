@@ -3,7 +3,16 @@
 
 class A
 {
-    int test(int a);
+public:
+    void set_mesh(double *mesh, int nmesh)
+    {
+        this->mesh = mesh;
+        this->nmesh = nmesh;
+    }
+    void print_info();
+
+    double *mesh;
+    int nmesh;
 };
 
 #endif

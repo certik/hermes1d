@@ -49,10 +49,15 @@ dp.set_spaces(space)
 dp.set_bilinear_form(0, 0, bilinear_form)
 dp.set_linear_form(0, linear_form)
 
-from hermes1d.assembly import f
+from hermes1d.assembly import f, A
 from numpy import array
-a = array([1, 2], dtype="double")
-print f(a)
+s = array([1, 4.3])
+#print f(s)
+
+a = A()
+a.set_mesh(s)
+a.print_info()
+
 
 #sln = Solution()
 #dp.create_matrix()

@@ -3,10 +3,7 @@
 
 class A
 {
-    int test(int a)
-    {
-        return a+5;
-    }
+    int test(int a);
 };
 
 #endif

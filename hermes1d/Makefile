@@ -22,7 +22,7 @@ all: assembly.so
 	$(CXX) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 %.so: %.o cassembly.o
-	$(CXX) $(LDFLAGS) -shared cassembly.o $+ -o $@ $(LIBS)
+	$(CXX) $(LDFLAGS) -shared $+ -o $@ $(LIBS)
 
 clean:
 	rm -f *.so *.pyd *.o *.pyc assembly.c

@@ -57,6 +57,7 @@ s = array([1, 4.3])
 a = A()
 a.set_mesh(s)
 a.print_info()
+print a.get_mesh()
 
 
 #sln = Solution()

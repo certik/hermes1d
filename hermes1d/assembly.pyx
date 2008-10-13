@@ -5,7 +5,8 @@ from numpy cimport int_t, double_t
 cimport cython
 
 cdef inline ndarray array_d(int size, double *data):
-    cdef ndarray ary = PyArray_EMPTY(1, &size, NPY_DOUBLE, 0)
+    #cdef ndarray ary = PyArray_EMPTY(1, &size, NPY_DOUBLE, 0)
+    cdef ndarray ary = zeros(size, dtype=float64)
     if data != NULL: memcpy(ary.data, data, size*sizeof(double))
     return ary
 
@@ -38,6 +39,9 @@ cdef class A:
         cdef int size
         iarray_d(a, &size, &b)
         self.thisptr.set_mesh(b, size)
+
+    def get_mesh(self):
+        return array_d(self.thisptr.nmesh, self.thisptr.mesh)
 
     def print_info(self):
         self.thisptr.print_info()

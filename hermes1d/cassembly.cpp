@@ -1,7 +1,8 @@
-class A
+#include "cassembly.h"
+
+/*
+int A::test(int a)
 {
-    int test(int a)
-    {
-        return a+5;
-    }
-};
+    return a+5;
+}
+*/

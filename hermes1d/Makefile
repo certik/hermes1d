@@ -8,7 +8,7 @@ LIBS :=
 CFLAGS := -Wfatal-errors -I/usr/include/python$(PYVER) $(OPTFLAGS) -I/usr/include/numpy -I../include
 LDFLAGS := -Wfatal-errors
 
-all: assembly.so
+all: assembly.so assembly.c assembly.o
 
 %.c: %.pyx
 	$(CYTHON) $<

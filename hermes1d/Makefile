@@ -16,8 +16,11 @@ all: assembly.so
 %.o : %.c
 	$(CXX) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-%.so: %.o
-	$(CXX) $(LDFLAGS) -shared $+ -o $@ $(LIBS)
+%.o : %.cpp
+	$(CXX) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+%.so: %.o cassembly.o
+	$(CXX) $(LDFLAGS) -shared cassembly.o $+ -o $@ $(LIBS)
 
 clean:
 	rm -f *.so *.pyd *.o *.pyc assembly.c

@@ -28,8 +28,8 @@ void A::assemble()
         set_dof(i, i+1, -a1/h1 + a0*h1/6);
     }
     i = this->nmesh-2;
-    h0 = this->h(i);
-    h1 = this->h(i+1);
+    h0 = this->h(i-1);
+    h1 = this->h(i);
     set_dof(i, i-1, -a1/h0 + a0*h0/6);
     set_dof(i, i, a1*(1./h0 + 1./h1) + a0*(h0/3.+h1/3.));
 }

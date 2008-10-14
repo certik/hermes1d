@@ -3,6 +3,17 @@
 
 void A::print_info()
 {
-    printf("nmesh: %d\n", this->nmesh);
-    printf("%f %f\n", this->mesh[0], this->mesh[1]);
+    printf("# nodes: %d\n", this->nmesh);
+}
+
+void set_dof(int i, int j, double value)
+{
+    printf("%d %d %f\n", i, j, value);
+}
+
+void A::assemble()
+{
+    printf("assembling...\n");
+    int i;
+    set_dof(1, 2, 3.4);
 }

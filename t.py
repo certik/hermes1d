@@ -50,14 +50,14 @@ dp.set_bilinear_form(0, 0, bilinear_form)
 dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f, A
-from numpy import array
-s = array([1, 4.3])
+from numpy import array, arange
+s = arange(-1, 1, 0.1)
 #print f(s)
 
 a = A()
 a.set_mesh(s)
+a.assemble()
 a.print_info()
-print a.get_mesh()
 
 
 #sln = Solution()

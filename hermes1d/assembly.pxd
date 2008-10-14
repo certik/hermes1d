@@ -39,6 +39,8 @@ cdef extern from "cassembly.h":
     cdef struct c_A "A":
         void set_mesh(double *mesh, int nmesh)
         void print_info()
+        void assemble()
+
         double *mesh
         int nmesh
 

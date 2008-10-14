@@ -10,6 +10,7 @@ public:
         this->nmesh = nmesh;
     }
     void print_info();
+    void assemble();
 
     double *mesh;
     int nmesh;

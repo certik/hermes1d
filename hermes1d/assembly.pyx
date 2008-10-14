@@ -45,3 +45,6 @@ cdef class A:
 
     def print_info(self):
         self.thisptr.print_info()
+
+    def assemble(self):
+        self.thisptr.assemble()

@@ -14,7 +14,7 @@ public:
 
     double h(int i)
     {
-        return self.mesh[i+1] - self.mesh[i];
+        return this->mesh[i+1] - this->mesh[i];
     }
 
     double *mesh;

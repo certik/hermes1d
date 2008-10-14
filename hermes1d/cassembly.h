@@ -12,6 +12,11 @@ public:
     void print_info();
     void assemble();
 
+    double h(int i)
+    {
+        return self.mesh[i+1] - self.mesh[i];
+    }
+
     double *mesh;
     int nmesh;
 };

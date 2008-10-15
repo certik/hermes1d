@@ -54,16 +54,12 @@ double System::int_u_v(int i, int j)
 void System::assemble()
 {
     printf("assembling...\n");
-    set_dof_A(0, 0, int_grad_u_grad_v(0, 0));
-    set_dof_A(0, 1, int_grad_u_grad_v(0, 1));
-    set_dof_B(0, 0, int_u_v(0, 0));
-    set_dof_B(0, 1, int_u_v(0, 1));
     int i;
-    for (i=1; i<this->nmesh-2; i++) {
-        set_dof_A(i, i-1, int_grad_u_grad_v(i, i-1));
+    for (i = 0; i < this->nmesh-2; i++) {
+        if (i>0) set_dof_A(i, i-1, int_grad_u_grad_v(i, i-1));
         set_dof_A(i, i, int_grad_u_grad_v(i, i));
         set_dof_A(i, i+1, int_grad_u_grad_v(i, i+1));
-        set_dof_B(i, i-1, int_u_v(i, i-1));
+        if (i>0) set_dof_B(i, i-1, int_u_v(i, i-1));
         set_dof_B(i, i, int_u_v(i, i));
         set_dof_B(i, i+1, int_u_v(i, i+1));
     }

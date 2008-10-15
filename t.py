@@ -52,16 +52,29 @@ dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f, System
 from numpy import array, arange
-s = arange(0, 1, 0.01)
-#print f(s)
+mesh = arange(0, 1, 0.01)
 
 a = System()
-a.set_mesh(s)
+a.set_mesh(mesh)
 a.assemble()
 a.print_info()
 A = a.get_matrix_A()
 B = a.get_matrix_B()
-eigen(A, B)
+sols = eigen(A, B)
+s = []
+n = sols.shape[1]
+for i in range(n):
+    vec = sols[:, i]
+    s.append(vec)
+
+def plot(mesh, sols):
+    import pylab
+    for i, sol in enumerate(sols):
+        pylab.plot(mesh, sol, label="%d" % i)
+        pylab.legend()
+    pylab.show()
+
+plot(mesh[:-1], s)
 
 
 #sln = Solution()

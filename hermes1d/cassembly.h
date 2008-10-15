@@ -28,10 +28,14 @@ public:
 
     double h(int i)
     {
+        if (i + 1 > this->nmesh)
+            return -1;
         return this->mesh[i+1] - this->mesh[i];
     }
     void set_dof_A(int i, int j, double value);
     void set_dof_B(int i, int j, double value);
+
+    double int_grad_u_grad_v(int i, int j);
 
     double *mesh;
     int nmesh;

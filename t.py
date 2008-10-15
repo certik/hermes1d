@@ -74,7 +74,7 @@ def plot(mesh, sols):
         pylab.legend()
     pylab.show()
 
-plot(mesh[:-1], s)
+#plot(mesh[:-1], s)
 
 
 #sln = Solution()

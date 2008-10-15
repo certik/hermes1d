@@ -5,12 +5,18 @@ PYVER := 2.5
 CYTHON := cython --convert-range
 CXX := g++
 LIBS :=
-CFLAGS := -Wfatal-errors -I/usr/include/python$(PYVER) $(OPTFLAGS) -I/usr/include/numpy -I../include
+CFLAGS := -Wfatal-errors -g -I/usr/include/python$(PYVER) $(OPTFLAGS) -I/usr/include/numpy -I../include
 LDFLAGS := -Wfatal-errors
 
 .SECONDARY:
 
 all: assembly.so
+
+HEADERS := cassembly.h matrix.h common.h
+
+cassembly.o: $(HEADERS)
+assembly.c: assembly.pyx assembly.pxd $(HEADERS)
+
 
 %.c: %.pyx
 	$(CYTHON) $<
@@ -20,9 +26,6 @@ all: assembly.so
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-cassembly.o: cassembly.h matrix.h
-assembly.c: assembly.pyx assembly.pxd
 
 %.so: %.o cassembly.o
 	$(CXX) $(LDFLAGS) -shared $+ -o $@ $(LIBS)

@@ -20,8 +20,8 @@ public:
     {
         this->mesh = mesh;
         this->nmesh = nmesh;
-        this->A = new SparseMatrix(nmesh-1);
-        this->B = new SparseMatrix(nmesh-1);
+        this->A = new SparseMatrix(nmesh*3+10);
+        this->B = new SparseMatrix(nmesh*3+10);
     }
     void print_info();
     void assemble();

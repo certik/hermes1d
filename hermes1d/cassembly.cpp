@@ -1,7 +1,8 @@
-#include "cassembly.h"
 #include "stdio.h"
 
-void A::print_info()
+#include "cassembly.h"
+
+void System::print_info()
 {
     printf("# nodes: %d\n", this->nmesh);
 }
@@ -16,7 +17,7 @@ void set_dof_B(int i, int j, double value)
     printf("B: %d %d %f\n", i, j, value);
 }
 
-void A::assemble()
+void System::assemble()
 {
     printf("assembling...\n");
     double h0, h1, a0 = 1.0, a1 = 1.0;

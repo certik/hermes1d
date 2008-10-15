@@ -21,7 +21,7 @@ all: assembly.so
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
-cassembly.o: cassembly.h
+cassembly.o: cassembly.h matrix.h
 assembly.c: assembly.pyx assembly.pxd
 
 %.so: %.o cassembly.o

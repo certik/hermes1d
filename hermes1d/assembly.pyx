@@ -26,13 +26,13 @@ def f(ndarray[double_t] x):
     return y
 
 
-cdef class A:
+cdef class System:
 
     def __cinit__(self):
-        self.thisptr = new_A()
+        self.thisptr = new_System()
 
     def __dealloc__(self):
-        del_A(self.thisptr)
+        del_System(self.thisptr)
 
     def set_mesh(self, ndarray a):
         cdef double *b

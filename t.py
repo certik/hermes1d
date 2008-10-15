@@ -49,12 +49,12 @@ dp.set_spaces(space)
 dp.set_bilinear_form(0, 0, bilinear_form)
 dp.set_linear_form(0, linear_form)
 
-from hermes1d.assembly import f, A
+from hermes1d.assembly import f, System
 from numpy import array, arange
 s = arange(-1, 1, 0.4)
 #print f(s)
 
-a = A()
+a = System()
 a.set_mesh(s)
 a.assemble()
 a.print_info()

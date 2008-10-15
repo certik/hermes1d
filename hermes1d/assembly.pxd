@@ -36,7 +36,7 @@ cdef extern from "Python.h":
 
 cdef extern from "cassembly.h":
 
-    cdef struct c_A "A":
+    cdef struct c_System "System":
         void set_mesh(double *mesh, int nmesh)
         void print_info()
         void assemble()
@@ -44,8 +44,8 @@ cdef extern from "cassembly.h":
         double *mesh
         int nmesh
 
-    c_A *new_A "new A" ()
-    void del_A "delete" (c_A *a)
+    c_System *new_System "new System" ()
+    void del_System "delete" (c_System *a)
 
-cdef class A:
-    cdef c_A *thisptr
+cdef class System:
+    cdef c_System *thisptr

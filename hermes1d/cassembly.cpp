@@ -32,6 +32,21 @@ double System::int_grad_u_grad_v(int i, int j)
         return 0.;
 }
 
+double System::int_u_v(int i, int j)
+{
+    double a0 = 1.0, a1 = 1.0;
+    double hi = this->h(i);
+    double hi_plus_1 = this->h(i+1);
+    if (j == i - 1)
+        return a0*hi/6;
+    else if (j == i)
+        return a0*(hi/3.+hi_plus_1/3.);
+    else if (j == i + 1)
+        return a0*hi_plus_1/6;
+    else
+        return 0.;
+}
+
 void System::assemble()
 {
     printf("assembling...\n");
@@ -49,9 +64,9 @@ void System::assemble()
         set_dof_A(i, i-1, int_grad_u_grad_v(i, i-1));
         set_dof_A(i, i, int_grad_u_grad_v(i, i));
         set_dof_A(i, i+1, int_grad_u_grad_v(i, i+1));
-        set_dof_B(i, i-1, a0*h0/6);
-        set_dof_B(i, i, a0*(h0/3.+h1/3.));
-        set_dof_B(i, i+1, a0*h1/6);
+        set_dof_B(i, i-1, int_u_v(i, i-1));
+        set_dof_B(i, i, int_u_v(i, i));
+        set_dof_B(i, i+1, int_u_v(i, i+1));
     }
     i = this->nmesh-2;
     h0 = this->h(i-1);

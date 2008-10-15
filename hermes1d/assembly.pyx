@@ -54,17 +54,15 @@ cdef class System:
     def assemble(self):
         self.thisptr.assemble()
 
-    cdef matrix2numpy(self, SparseMatrix *m):
+    cdef matrix2scipy(self, SparseMatrix *m):
+        from scipy.sparse import coo_matrix
         Ai = array_i(m.A_len, m.Ai)
         Aj = array_i(m.A_len, m.Aj)
         Ax = array_d(m.A_len, m.Ax)
-        return Ai, Aj, Ax
+        return coo_matrix((Ax, [Ai, Aj]))
 
     def get_matrix_A(self):
-        from numpy import array
-        from scipy.sparse import coo_matrix
-        Ai, Aj, Ax = self.matrix2numpy(self.thisptr.A)
-        obj = Ax
-        ij = array([Ai, Aj])
-        return coo_matrix((obj, ij))
+        return self.matrix2scipy(self.thisptr.A)
 
+    def get_matrix_B(self):
+        return self.matrix2scipy(self.thisptr.B)

@@ -2,7 +2,8 @@
 
 from hermes1d import finalize, Mesh, H1Shapeset, H1Space, DiscreteProblem, \
         Solution, ScalarView, int_grad_u_grad_v, int_u_v, BaseView, MeshView, \
-        MatrixView, BC_DIRICHLET, BC_NEUMANN, LinearFunction, BaseFunction
+        MatrixView, BC_DIRICHLET, BC_NEUMANN, LinearFunction, BaseFunction, \
+        eigen
 
 #def bilinear_form(u, v):
 #    return -int_grad_u_grad_v(u, v)+int_u_v(u, v)
@@ -51,14 +52,16 @@ dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f, System
 from numpy import array, arange
-s = arange(-1, 1, 0.4)
+s = arange(-1, 1, 0.001)
 #print f(s)
 
 a = System()
 a.set_mesh(s)
 a.assemble()
 a.print_info()
-print a.get_matrix_A()
+A = a.get_matrix_A()
+B = a.get_matrix_B()
+eigen(A, B)
 
 
 #sln = Solution()

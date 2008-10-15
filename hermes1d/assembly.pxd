@@ -56,4 +56,4 @@ cdef extern from "cassembly.h":
 cdef class System:
     cdef c_System *thisptr
 
-    cdef matrix2numpy(self, SparseMatrix *m)
+    cdef matrix2scipy(self, SparseMatrix *m)

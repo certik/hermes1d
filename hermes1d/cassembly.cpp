@@ -16,7 +16,7 @@ void System::set_dof_A(int i, int j, double value)
 void System::set_dof_B(int i, int j, double value)
 {
     printf("B: ");
-    this->A->set_value(i, j, value);
+    this->B->set_value(i, j, value);
 }
 
 void System::assemble()

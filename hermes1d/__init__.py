@@ -13,3 +13,4 @@ from discrete import *
 from function import *
 from view import *
 from integrals_h1 import *
+from solvers import *

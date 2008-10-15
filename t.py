@@ -58,6 +58,7 @@ a = System()
 a.set_mesh(s)
 a.assemble()
 a.print_info()
+print a.get_matrix_A()
 
 
 #sln = Solution()

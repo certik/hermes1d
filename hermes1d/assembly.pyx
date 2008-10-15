@@ -1,12 +1,17 @@
-from numpy import zeros, float64
+from numpy import zeros, empty, float64, int32
 from numpy cimport NPY_DOUBLE
 from numpy cimport int_t, double_t
 
 cimport cython
 
-cdef inline ndarray array_d(int size, double *data):
+cdef inline ndarray array_i(int size, int *data):
     #cdef ndarray ary = PyArray_EMPTY(1, &size, NPY_DOUBLE, 0)
-    cdef ndarray ary = zeros(size, dtype=float64)
+    cdef ndarray ary = empty(size, dtype=int32)
+    if data != NULL: memcpy(ary.data, data, size*sizeof(int))
+    return ary
+
+cdef inline ndarray array_d(int size, double *data):
+    cdef ndarray ary = empty(size, dtype=float64)
     if data != NULL: memcpy(ary.data, data, size*sizeof(double))
     return ary
 
@@ -48,3 +53,18 @@ cdef class System:
 
     def assemble(self):
         self.thisptr.assemble()
+
+    cdef matrix2numpy(self, SparseMatrix *m):
+        Ai = array_i(m.A_len, m.Ai)
+        Aj = array_i(m.A_len, m.Aj)
+        Ax = array_d(m.A_len, m.Ax)
+        return Ai, Aj, Ax
+
+    def get_matrix_A(self):
+        from numpy import array
+        from scipy.sparse import coo_matrix
+        Ai, Aj, Ax = self.matrix2numpy(self.thisptr.A)
+        obj = Ax
+        ij = array([Ai, Aj])
+        return coo_matrix((obj, ij))
+

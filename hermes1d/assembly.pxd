@@ -36,6 +36,11 @@ cdef extern from "Python.h":
 
 cdef extern from "cassembly.h":
 
+    cdef struct SparseMatrix:
+        int *Ai, *Aj
+        double *Ax
+        int A_len, A_max
+
     cdef struct c_System "System":
         void set_mesh(double *mesh, int nmesh)
         void print_info()
@@ -43,9 +48,12 @@ cdef extern from "cassembly.h":
 
         double *mesh
         int nmesh
+        SparseMatrix *A, *B
 
     c_System *new_System "new System" ()
     void del_System "delete" (c_System *a)
 
 cdef class System:
     cdef c_System *thisptr
+
+    cdef matrix2numpy(self, SparseMatrix *m)

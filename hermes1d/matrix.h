@@ -24,7 +24,7 @@ public:
 
     void set_value(int i, int j, double val)
     {
-        printf("setting value: %d %d %f\n", i, j, val);
+        //printf("setting value: %d %d %f\n", i, j, val);
         this->Ai[this->A_len] = i;
         this->Aj[this->A_len] = j;
         this->Ax[this->A_len] = val;

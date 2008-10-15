@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "math.h"
 
 #include "cassembly.h"
 
@@ -51,21 +52,48 @@ double System::int_u_v(int i, int j)
         return 0.;
 }
 
+double System::int_grad_u_v_over_x(int i, int j)
+{
+    double a = this->mesh[j];
+    if (j == i - 1) {
+        double h = this->h(i);
+        return (-h + (h-a)*(log(a - h) - log(a)))/pow(h, 2);
+    } else if (j == i) {
+        double h = this->h(i);
+        double h2 = this->h(i+1);
+        return (h + a*log(a - h) + h*log(a) - a*log(a) - h*log(a - h))/pow(h, 2) + (h2 + a*log(a) + h2*log(a) - a*log(a + h2) - h2*log(a + h2))/pow(h2, 2);
+    } else if (j == i + 1) {
+        double h2 = this->h(i+1);
+        return (-h2 + a*log(a + h2) - a*log(a))/pow(h2, 2);
+    } else
+        return 0.;
+}
+
+double System::bilinear_form_A(int i, int j)
+{
+    return int_grad_u_grad_v(i, j);
+}
+
+double System::bilinear_form_B(int i, int j)
+{
+    return int_u_v(i, j);
+}
+
 void System::assemble()
 {
     printf("assembling...\n");
     int i;
     for (i = 0; i < this->nmesh-2; i++) {
-        if (i>0) set_dof_A(i, i-1, int_grad_u_grad_v(i, i-1));
-        set_dof_A(i, i, int_grad_u_grad_v(i, i));
-        set_dof_A(i, i+1, int_grad_u_grad_v(i, i+1));
-        if (i>0) set_dof_B(i, i-1, int_u_v(i, i-1));
-        set_dof_B(i, i, int_u_v(i, i));
-        set_dof_B(i, i+1, int_u_v(i, i+1));
+        if (i>0) set_dof_A(i, i-1, bilinear_form_A(i, i-1));
+        set_dof_A(i, i, bilinear_form_A(i, i));
+        set_dof_A(i, i+1, bilinear_form_A(i, i+1));
+        if (i>0) set_dof_B(i, i-1, bilinear_form_B(i, i-1));
+        set_dof_B(i, i, bilinear_form_B(i, i));
+        set_dof_B(i, i+1, bilinear_form_B(i, i+1));
     }
     i = this->nmesh-2;
-    set_dof_A(i, i-1, int_grad_u_grad_v(i-1, i-1-1));
-    set_dof_A(i, i, int_grad_u_grad_v(i-1, i-1));
-    set_dof_B(i, i-1, int_u_v(i-1, i-1-1));
-    set_dof_B(i, i, int_u_v(i-1, i-1));
+    set_dof_A(i, i-1, bilinear_form_A(i-1, i-1-1));
+    set_dof_A(i, i, bilinear_form_A(i-1, i-1));
+    set_dof_B(i, i-1, bilinear_form_B(i-1, i-1-1));
+    set_dof_B(i, i, bilinear_form_B(i-1, i-1));
 }

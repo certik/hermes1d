@@ -35,8 +35,12 @@ public:
     void set_dof_A(int i, int j, double value);
     void set_dof_B(int i, int j, double value);
 
+    double bilinear_form_A(int i, int j);
+    double bilinear_form_B(int i, int j);
+
     double int_grad_u_grad_v(int i, int j);
     double int_u_v(int i, int j);
+    double int_grad_u_v_over_x(int i, int j);
 
     double *mesh;
     int nmesh;

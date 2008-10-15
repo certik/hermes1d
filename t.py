@@ -52,7 +52,7 @@ dp.set_linear_form(0, linear_form)
 
 from hermes1d.assembly import f, System
 from numpy import array, arange
-mesh = arange(0, 1, 0.01)
+mesh = arange(0.01, 1, 0.1)
 
 a = System()
 a.set_mesh(mesh)

@@ -30,6 +30,8 @@ public:
     {
         return this->mesh[i+1] - this->mesh[i];
     }
+    void set_dof_A(int i, int j, double value);
+    void set_dof_B(int i, int j, double value);
 
     double *mesh;
     int nmesh;

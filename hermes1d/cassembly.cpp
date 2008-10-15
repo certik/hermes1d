@@ -7,14 +7,16 @@ void System::print_info()
     printf("# nodes: %d\n", this->nmesh);
 }
 
-void set_dof_A(int i, int j, double value)
+void System::set_dof_A(int i, int j, double value)
 {
-    printf("A: %d %d %f\n", i, j, value);
+    printf("A: ");
+    this->A->set_value(i, j, value);
 }
 
-void set_dof_B(int i, int j, double value)
+void System::set_dof_B(int i, int j, double value)
 {
-    printf("B: %d %d %f\n", i, j, value);
+    printf("B: ");
+    this->A->set_value(i, j, value);
 }
 
 void System::assemble()

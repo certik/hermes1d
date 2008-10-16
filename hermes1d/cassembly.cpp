@@ -80,6 +80,7 @@ double System::int_u_v_over_x(int i, int j)
     } else if (j == i) {
         double h = this->h(i);
         double h2 = this->h(i+1);
+        //printf("H: %d %d %f %f\n", i, j, a, h);
         return (-2*a*h - 2*pow(a,2)*log(a - h) - 2*pow(h,2)*log(a - h) + 2*pow(a,2)*log(a) + 2*pow(h,2)*log(a) - 4*a*h*log(a) + 4*a*h*log(a - h) + 3*pow(h,2))/(2*pow(h,2)) + (-2*a*h2 - 2*pow(a,2)*log(a) - 2*pow(h2,2)*log(a) + 2*pow(a,2)*log(a + h2) + 2*pow(h2,2)*log(a + h2) - 4*a*h2*log(a) + 4*a*h2*log(a + h2) - 3*pow(h2,2))/(2*pow(h2,2));
     } else if (j == i + 1) {
         double h2 = this->h(i+1);
@@ -90,8 +91,8 @@ double System::int_u_v_over_x(int i, int j)
 
 double System::bilinear_form_A(int i, int j)
 {
-    return int_grad_u_grad_v(i, j); //- int_grad_u_v_over_x(i, j)
-    //    - int_u_v_over_x(i, j);
+    return int_grad_u_grad_v(i, j) - int_grad_u_v_over_x(i, j)
+        - int_u_v_over_x(i, j);
 }
 
 double System::bilinear_form_B(int i, int j)

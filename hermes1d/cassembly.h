@@ -3,6 +3,9 @@
 
 #include "matrix.h"
 
+typedef double (*f2)(double x);
+double test2();
+
 class System
 {
 public:

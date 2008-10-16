@@ -21,14 +21,31 @@ cdef inline int iarray_d(ndarray a, int *size, double **data) except -1:
     if size!=NULL: size[0] = a.dimensions[0]
     if data!=NULL: data[0] = <double *> (a.data)
 
+cdef extern from "cassembly.h":
+    ctypedef double (*f2)(double x)
+    double test2()
 
-@cython.boundscheck(False)
-def f(ndarray[double_t] x):
-    cdef ndarray[double_t] y = zeros(len(x), dtype="double")
-    cdef int i
-    for i in range(len(x)):
-        y[i] = x[i] + 2
-    return y
+def test3():
+    return test2()
+
+cdef api double integ_quad_c(f2 f, double a, double b):
+    from integrate import quadrature
+    val, err = quadrature(func2, a, b, args=(<object>f,))
+    return val
+
+def integ_quad(f, a, b):
+    from integrate import quadrature
+    val, err = quadrature(func, a, b, args=(f,))
+    return val
+
+from numpy import array
+def func(a, f):
+    return array([f(x) for x in a])
+
+def func2(a, f):
+    cdef f2 g
+    g = <f2>f
+    return array([g(x) for x in a])
 
 
 cdef class System:

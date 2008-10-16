@@ -3,6 +3,8 @@
 
 #include "cassembly.h"
 
+#include "assembly_api.h"
+
 void System::print_info()
 {
     printf("# nodes: %d\n", this->nmesh);
@@ -141,3 +143,15 @@ void System::assemble()
     set_dof_B(i, i-1, bilinear_form_B(i-1, i-1-1));
     set_dof_B(i, i, bilinear_form_B(i-1, i-1));
 }
+
+double myf(double x)
+{
+    return sin(x);
+}
+
+double test2()
+{
+    import_hermes1d__assembly();
+    integ_quad_c(myf, 0, 3.1415926);
+}
+

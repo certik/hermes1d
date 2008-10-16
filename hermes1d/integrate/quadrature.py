@@ -87,7 +87,7 @@ def quadrature(func,a,b,args=(),tol=1.49e-8,maxiter=50, reference=False):
     val = err
     n = 1
     while (err > tol) and (n < maxiter):
-        newval = fixed_quad(func, a, b, (), n, reference)
+        newval = fixed_quad(func, a, b, args, n, reference)
         err = abs(newval-val)
         val = newval
         n = n + 1

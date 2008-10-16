@@ -89,10 +89,33 @@ double System::int_u_v_over_x(int i, int j)
         return 0.;
 }
 
+double System::int_u_v_over_x2(int i, int j)
+{
+
+
+    double a = this->mesh[j+1];
+    if (j == i - 1) {
+        double h = this->h(i);
+        return (a*pow(h,4)*log(a) - a*pow(h,4)*log(a - h) - 3*pow(a,2)*pow(h,3)*log(a) - 2*pow(a,3)*pow(h,2)*log(a - h) + 2*pow(a,3)*pow(h,2)*log(a) + 3*pow(a,2)*pow(h,3)*log(a - h) - 2*pow(a,2)*pow(h,3) + 2*a*pow(h,4))/(pow(a,2)*pow(h,4) - a*pow(h,5));
+    } else if (j == i) {
+        double h = this->h(i);
+        double h2 = this->h(i+1);
+        return (-4*pow(a,2)*pow(h2,3)*log(a + h2) - 2*a*pow(h2,4)*log(a + h2) - 2*pow(a,3)*pow(h2,2)*log(a + h2) + 2*a*pow(h2,4)*log(a) + 2*pow(a,3)*pow(h2,2)*log(a) + 4*pow(a,2)*pow(h2,3)*log(a) + 2*pow(a,2)*pow(h2,3) + 3*a*pow(h2,4) + pow(h2,5))/(pow(a,2)*pow(h2,4) + a*pow(h2,5)) + (-4*pow(a,2)*pow(h,3)*log(a - h) - 2*a*pow(h,4)*log(a) - 2*pow(a,3)*pow(h,2)*log(a) + 2*a*pow(h,4)*log(a - h) + 2*pow(a,3)*pow(h,2)*log(a - h) + 4*pow(a,2)*pow(h,3)*log(a) + 2*pow(a,2)*pow(h,3) - 3*a*pow(h,4) + pow(h,5))/(pow(a,2)*pow(h,4) - a*pow(h,5));
+    } else if (j == i + 1) {
+        double h2 = this->h(i+1);
+        return (a*pow(h2,4)*log(a + h2) - a*pow(h2,4)*log(a) - 3*pow(a,2)*pow(h2,3)*log(a) - 2*pow(a,3)*pow(h2,2)*log(a) + 2*pow(a,3)*pow(h2,2)*log(a + h2) + 3*pow(a,2)*pow(h2,3)*log(a + h2) - 2*pow(a,2)*pow(h2,3) - 2*a*pow(h2,4))/(pow(a,2)*pow(h2,4) + a*pow(h2,5));
+    } else
+        return 0.;
+}
+
 double System::bilinear_form_A(int i, int j)
 {
-    return int_grad_u_grad_v(i, j) - int_grad_u_v_over_x(i, j)
-        - int_u_v_over_x(i, j);
+    double l = 1.0;
+    return int_grad_u_grad_v(i, j)/2
+        - int_grad_u_v_over_x(i, j)
+        - int_u_v_over_x(i, j)
+        + l*(l+1)*int_u_v_over_x2(i, j)/2
+        ;
 }
 
 double System::bilinear_form_B(int i, int j)

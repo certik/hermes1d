@@ -42,6 +42,7 @@ public:
     double int_u_v(int i, int j);
     double int_grad_u_v_over_x(int i, int j);
     double int_u_v_over_x(int i, int j);
+    double int_u_v_over_x2(int i, int j);
 
     double *mesh;
     int nmesh;

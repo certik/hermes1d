@@ -24,7 +24,7 @@ def eigen(A, B):
     B = convert_mat(B)
     print "solving (%d x %d)" % (n, n)
     Atau = A.copy()
-    tau = -1
+    tau = -40
     Atau.shift(-tau, B)
     K = precon.jacobi(Atau)
     A = A.to_sss()

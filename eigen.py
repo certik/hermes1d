@@ -96,7 +96,7 @@ mesh.refine_all_elements()
 mesh.refine_all_elements()
 mesh.refine_all_elements()
 mesh.refine_all_elements()
-mesh.refine_all_elements()
+#mesh.refine_all_elements()
 #mesh.refine_all_elements()
 shapeset = H1Shapeset()
 

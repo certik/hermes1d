@@ -152,7 +152,6 @@ double myf(double x)
 double test2()
 {
     import_hermes1d__assembly();
-    return 5.5;
     return integ_quad_c(myf, 0, 3.1415926);
 }
 

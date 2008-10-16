@@ -30,7 +30,8 @@ def test3():
 
 cdef api double integ_quad_c(f2 f, double a, double b):
     from integrate import quadrature
-    val, err = quadrature(func2, a, b, args=(<object>f,))
+    #val, err = quadrature(func2, a, b, args=(<object>f,))
+    val, err = quadrature(func2, a, b, args=(a,))
     return val
 
 def integ_quad(f, a, b):
@@ -42,9 +43,13 @@ from numpy import array
 def func(a, f):
     return array([f(x) for x in a])
 
+def f3(x):
+    return x**2
+
 def func2(a, f):
-    cdef f2 g
-    g = <f2>f
+    #cdef f2 g
+    #g = <f2>f
+    g = f3
     return array([g(x) for x in a])
 
 

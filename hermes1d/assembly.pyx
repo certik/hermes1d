@@ -28,10 +28,21 @@ cdef extern from "cassembly.h":
 def test3():
     return test2()
 
+cdef class MyFunc:
+    cdef f2 thisptr
+
+    cdef set_f(MyFunc self, f2 f):
+        self.thisptr = f
+
+    cdef f2 get_f(MyFunc self):
+        return self.thisptr
+
 cdef api double integ_quad_c(f2 f, double a, double b):
     from integrate import quadrature
+    cdef MyFunc mf = MyFunc()
+    mf.set_f(f)
     #val, err = quadrature(func2, a, b, args=(<object>f,))
-    val, err = quadrature(func2, a, b, args=(a,))
+    val, err = quadrature(func2, a, b, args=(mf,))
     return val
 
 def integ_quad(f, a, b):
@@ -46,11 +57,9 @@ def func(a, f):
 def f3(x):
     return x**2
 
-def func2(a, f):
-    #cdef f2 g
-    #g = <f2>f
-    g = f3
-    return array([g(x) for x in a])
+def func2(a, MyFunc mf):
+    cdef f2 f = mf.get_f()
+    return array([f(x) for x in a])
 
 
 cdef class System:

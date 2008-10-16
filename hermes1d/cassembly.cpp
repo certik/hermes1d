@@ -54,7 +54,7 @@ double System::int_u_v(int i, int j)
 
 double System::int_grad_u_v_over_x(int i, int j)
 {
-    double a = this->mesh[j];
+    double a = this->mesh[j+1];
     if (j == i - 1) {
         double h = this->h(i);
         return (-h + (h-a)*(log(a - h) - log(a)))/pow(h, 2);
@@ -73,7 +73,7 @@ double System::int_u_v_over_x(int i, int j)
 {
 
 
-    double a = this->mesh[j];
+    double a = this->mesh[j+1];
     if (j == i - 1) {
         double h = this->h(i);
         return (-2*pow(a,2)*log(a) + 2*a*h + 2*pow(a,2)*log(a - h) - 2*a*h*log(a - h) + 2*a*h*log(a) - pow(h,2))/(2*pow(h,2));

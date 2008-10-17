@@ -6,7 +6,7 @@ CYTHON := cython --convert-range
 CXX := g++
 LIBS :=
 CFLAGS := -Wfatal-errors -g -I/usr/include/python$(PYVER) $(OPTFLAGS) -I/usr/include/numpy -I../include
-LDFLAGS := -Wfatal-errors
+LDFLAGS := -Wfatal-errors -g
 
 .SECONDARY:
 

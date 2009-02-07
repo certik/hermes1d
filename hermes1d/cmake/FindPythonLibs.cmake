@@ -1,3 +1,6 @@
+# PYTHON_VERSION = either empty, then it will determine the default systemwide
+# Python and use that version, or you specify it, then it will use that Python
+# version
 IF(NOT PYTHON_VERSION)
     execute_process(COMMAND python -c "import sys;print '%d.%d' % sys.version_info[:2]" OUTPUT_VARIABLE PYTHON_VERSION)
     string(STRIP ${PYTHON_VERSION} PYTHON_VERSION)

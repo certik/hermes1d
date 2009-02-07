@@ -8,5 +8,5 @@ include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_PATH})
 set(CMAKE_CXX_FLAGS "-Wfatal-errors")
 
 add_custom_command(OUTPUT assembly.cpp COMMAND cython ARGS -o assembly.cpp assembly.pyx DEPENDS assembly.pyx)
-add_library(assembly cassembly.cpp assembly.cpp)
+add_library(assembly SHARED cassembly.cpp assembly.cpp)
 set_target_properties(assembly PROPERTIES PREFIX "")

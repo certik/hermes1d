@@ -340,6 +340,8 @@ def test_discrete_problem():
     d.assign_dofs()
     J = d.assemble_J()
     F = d.assemble_F()
-    # solve: J*dY = -F
+    x = d.solve(J, F)
+    print
     print J
     print F
+    print x

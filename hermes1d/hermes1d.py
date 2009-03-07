@@ -1,4 +1,5 @@
-from numpy import empty
+from numpy import zeros
+from numpy.linalg import solve
 from quadrature import quadrature
 
 class Node(object):
@@ -204,8 +205,8 @@ class DiscreteProblem(object):
         return i
 
     def assemble_J(self):
-        Y = empty((self._ndofs,))
-        J = empty((self._ndofs, self._ndofs))
+        Y = zeros((self._ndofs,))
+        J = zeros((self._ndofs, self._ndofs))
         for m in self._meshes:
             for e in m.elements:
                 for i in range(len(e.dofs)):
@@ -250,8 +251,8 @@ class DiscreteProblem(object):
         return val
 
     def assemble_F(self):
-        Y = empty((self._ndofs,))
-        F = empty((self._ndofs,))
+        Y = zeros((self._ndofs,))
+        F = zeros((self._ndofs,))
         for m in self._meshes:
             for el_num, e in enumerate(m.elements):
                 for i in range(len(e.dofs)):
@@ -279,7 +280,7 @@ class DiscreteProblem(object):
                             v += coeff*e.shape_function_deriv(j, x) * \
                                     e.shape_function(i, x)
                         return v
-                    dphi_phi, err = quadrature(func1, -1, 1)
+                    du_phi, err = quadrature(func1, -1, 1)
                     def func2(x):
                         # x is the integration point, we need to determine
                         # the values of y1, y2, ... at this integration
@@ -291,5 +292,8 @@ class DiscreteProblem(object):
                         return f(y1, y2, x) * e.shape_function(i, x)
                     f_phi, err = quadrature(func2, -1, 1)
                     f_phi *= e.jacobian
-                    F[i_glob] += f_phi
+                    F[i_glob] += du_phi - f_phi
         return F
+
+    def solve(self, J, F):
+        return solve(J, F)

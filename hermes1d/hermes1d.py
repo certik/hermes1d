@@ -1,3 +1,5 @@
+from numpy import empty
+
 class Node(object):
     """
     Represents a node on the mesh, given by a coordinate.
@@ -51,6 +53,12 @@ class Element(object):
                 print l
                 raise ValueError("local dof too high")
             self._dofs[l] = g
+
+    def integrate_dphi_phi(self, i, j):
+        return 0.0
+
+    def integrate_df_phi_phi(self, f, i, j):
+        return 0.0
 
 class Mesh(object):
     """
@@ -143,4 +151,14 @@ class DiscreteProblem(object):
         i = 0
         for m in self._meshes:
             i = m.assign_dofs(start_i=i)
+        self._ndofs = i
         return i
+
+    def assemble(self):
+        J = empty((self._ndofs, self._ndofs))
+        for mi, m in enumerate(self._meshes):
+            for e in m.elements:
+                for i in range(len(e.dofs)):
+                    for j in range(len(e.dofs)):
+                        J[i, j] = e.integrate_dphi_phi(j, i) + \
+                                e.integrate_df_phi_phi(self._rhs[mi], j, i)

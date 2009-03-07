@@ -309,3 +309,4 @@ def test_discrete_problem():
         return -k**2 * y1, (-k**2, 0)
     d.set_rhs([f1, f2])
     d.assign_dofs()
+    d.assemble()

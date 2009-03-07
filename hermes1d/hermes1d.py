@@ -237,7 +237,7 @@ class DiscreteProblem(object):
                         dphi_phi = e.integrate_dphi_phi(j, i)
                         df_phi_phi, err = quadrature(func, -1, 1)
                         df_phi_phi *= e.jacobian
-                        J[i_glob, j_glob] += dphi_phi + df_phi_phi
+                        J[i_glob, j_glob] += dphi_phi - df_phi_phi
                         print "X", i_glob, j_glob, i, dphi_phi, df_phi_phi
         return J
 

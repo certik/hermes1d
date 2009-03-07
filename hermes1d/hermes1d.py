@@ -79,6 +79,18 @@ class Element(object):
             return 0.5*x+0.5
         raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
 
+    def shape_function_deriv(self, i, x):
+        """
+        Returns the value of the shape function "i" at the point "x".
+
+        "x" is in the reference domain.
+        """
+        if i == 0:
+            return -0.5
+        if i == 1:
+            return 0.5
+        raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
+
 class Mesh(object):
     """
     Represents a finite element mesh, given by a list of nodes and then by a
@@ -212,11 +224,24 @@ class DiscreteProblem(object):
                         J[i_glob, j_glob] += dphi_phi + df_phi_phi
         return J
 
+    def get_sol_value(self, mesh_num, el_num, Y, x):
+        """
+        "x" is on the *reference* element
+        """
+        m = self._meshes[mesh_num]
+        e = m.elements[el_num]
+        val = 0.
+        for i, g in enumerate(e.dofs):
+            if g == -1:
+                continue
+            val += e.shape_function(i, x)*Y[g]
+        return val
+
     def assemble_F(self):
         Y = empty((self._ndofs,))
         F = empty((self._ndofs,))
         for m in self._meshes:
-            for e in m.elements:
+            for el_num, e in enumerate(m.elements):
                 for i in range(len(e.dofs)):
                     i_glob = e.dofs[i]
                     if i_glob == -1:
@@ -224,16 +249,30 @@ class DiscreteProblem(object):
                     mi = self.get_mesh_number(i_glob)
                     f = self._F(mi)
                     # now f = f(y1, y2, ..., t)
-                    def func(x):
+                    def func1(x):
                         # x is the integration point, we need to determine
                         # the values of y1, y2, ... at this integration
                         # point.
 
-                        # for linear problems, it doesn't matter what those
-                        # values are:
-                        y1 = 0
-                        y2 = 0
+                        # XXX: this only works if all the meshes are the same:
+                        y1 = self.get_sol_value(0, el_num, Y, x)
+                        y2 = self.get_sol_value(1, el_num, Y, x)
+                        v = 0.
+                        for j in range(len(e.dofs)):
+                            g = e.dofs[j]
+                            v += Y[g]*e.shape_function_deriv(j, x) * \
+                                    e.shape_function(i, x)
+                        return v
+                    dphi_phi, err = quadrature(func1, -1, 1)
+                    def func2(x):
+                        # x is the integration point, we need to determine
+                        # the values of y1, y2, ... at this integration
+                        # point.
+
+                        # XXX: this only works if all the meshes are the same:
+                        y1 = self.get_sol_value(0, el_num, Y, x)
+                        y2 = self.get_sol_value(1, el_num, Y, x)
                         return f(y1, y2, x) * e.shape_function(i, x)
-                    df_phi, err = quadrature(func, -1, 1)
-                    F[i_glob] += df_phi
+                    f_phi, err = quadrature(func2, -1, 1)
+                    F[i_glob] += f_phi
         return F

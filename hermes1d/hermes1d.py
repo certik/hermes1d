@@ -1,4 +1,5 @@
 from numpy import empty
+from quadrature import quadrature
 
 class Node(object):
     """
@@ -55,6 +56,9 @@ class Element(object):
             self._dofs[l] = g
 
     def integrate_dphi_phi(self, i, j):
+        """
+        Calculates the integral of dphi*phi on the reference element
+        """
         integrals_table = {
                 (0, 0): -0.5,
                 (1, 0): 0.5,
@@ -64,7 +68,14 @@ class Element(object):
         return integrals_table[(i, j)]
 
     def integrate_df_phi_phi(self, f, i, j):
+        """
+        Calculates the integral of df * phi * phi on the reference element
+        """
         return 0.0
+        # this should be now fixed
+        def func(x):
+            return f(x)*phi(i, x)*phi(j, x)
+        return quadrature(func, -1, 1)
 
 class Mesh(object):
     """

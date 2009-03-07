@@ -71,5 +71,14 @@ class Mesh(object):
         return self._elements
 
     def assign_dofs(self):
+        # assign the vertex functions
         for i in range(len(self._nodes)-1):
             self._elements[i].assign_dofs([0, 1], [i, i+1])
+
+        # assign bubble functions
+        i = len(self._nodes)
+        for e in self._elements:
+            local_dofs = range(2, e.order+1)
+            global_dofs = range(i, i+e.order-1)
+            i += e.order-1
+            e.assign_dofs(local_dofs, global_dofs)

@@ -35,6 +35,10 @@ class Element(object):
     def dofs(self):
         return self._dofs
 
+    @property
+    def jacobian(self):
+        return (self._nodes[1].x - self._nodes[0].x)/2
+
     def assign_dofs(self, local_dofs, global_dofs):
         """
         Sets the global degrees of freedom corresponding to the local shape
@@ -221,6 +225,7 @@ class DiscreteProblem(object):
                                     e.shape_function(j, x)
                         dphi_phi = e.integrate_dphi_phi(j, i)
                         df_phi_phi, err = quadrature(func, -1, 1)
+                        df_phi_phi *= e.jacobian
                         J[i_glob, j_glob] += dphi_phi + df_phi_phi
         return J
 
@@ -274,5 +279,6 @@ class DiscreteProblem(object):
                         y2 = self.get_sol_value(1, el_num, Y, x)
                         return f(y1, y2, x) * e.shape_function(i, x)
                     f_phi, err = quadrature(func2, -1, 1)
+                    f_phi *= e.jacobian
                     F[i_glob] += f_phi
         return F

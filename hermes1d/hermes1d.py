@@ -125,6 +125,17 @@ class DiscreteProblem(object):
         """
         self._meshes = meshes
 
+    def set_rhs(self, rhs):
+        """
+        Sets the rhs for ODE.
+
+        Example:
+        >>> e = DiscreteProblem([m1, m2])
+        >>> # f1 and f2 are functions of (y1, y2, t)
+        >>> e.set_rhs([f1, f2])
+        """
+        self._rhs = rhs
+
     def assign_dofs(self):
         """
         Assigns dofs for all the meshes in the problem.

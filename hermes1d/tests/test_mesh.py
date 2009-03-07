@@ -281,3 +281,31 @@ def test_mesh9():
     assert m2.elements[2].dofs[2] == 5 + 6
 
     assert ndofs == 12
+
+def test_discrete_problem():
+    n1 = Node(1)
+    n2 = Node(3)
+    n3 = Node(4)
+    n4 = Node(5)
+    e1 = Element(n1, n2, order=3)
+    e2 = Element(n2, n3, order=1)
+    e3 = Element(n3, n4, order=2)
+    nodes = (n1, n2, n3, n4)
+    elements = (e1, e2, e3)
+    m1 = Mesh(nodes, elements)
+    m1.set_bc(left=False, value=1)
+    e4 = Element(n1, n2, order=3)
+    e5 = Element(n2, n3, order=1)
+    e6 = Element(n3, n4, order=2)
+    elements = (e4, e5, e6)
+    m2 = Mesh(nodes, elements)
+    m2.set_bc(left=True, value=1)
+
+    d = DiscreteProblem(meshes=[m1, m2])
+    def f1(y1, y2, t):
+        return y2, (0, 1)
+    def f2(y1, y2, t):
+        k = 2.0
+        return -k**2 * y1, (-k**2, 0)
+    d.set_rhs([f1, f2])
+    d.assign_dofs()

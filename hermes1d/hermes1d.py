@@ -1,4 +1,4 @@
-from numpy import zeros, array
+from numpy import zeros, array, arange
 from numpy.linalg import solve
 from quadrature import quadrature, fixed_quad
 
@@ -235,8 +235,8 @@ class DiscreteProblem(object):
                             # the values of y1, y2, ... at this integration
                             # point.
 
-                            # for linear problems, it doesn't matter what those
-                            # values are:
+                            # XXX: for linear problems, it doesn't matter what
+                            # those values are:
                             y1 = 0
                             y2 = 0
                             x_phys = e.ref2phys(x)
@@ -294,6 +294,7 @@ class DiscreteProblem(object):
                             g = e.dofs[j]
                             if g == -1:
                                 coeff = e.get_dirichlet_value(j)
+                                print "XX", e.dofs, j
                             else:
                                 coeff = Y[g]
                             v += coeff*e.shape_function_deriv(j, x)
@@ -328,7 +329,7 @@ class DiscreteProblem(object):
 
                     f_phi, err = quadrature(func2, -1., 1.)
                     f_phi *= e.jacobian
-                    print "X", i_glob, el_num, i, du_phi, f_phi
+                    #print "X", i_glob, el_num, i, du_phi, f_phi
                     F[i_glob] += du_phi - f_phi
         #print Y
         #print "get_sol_value"
@@ -337,3 +338,22 @@ class DiscreteProblem(object):
 
     def solve(self, J, F):
         return solve(J, -F)
+
+    def linearize(self, Y, n):
+        """
+        Y ... solution vector (all solutions)
+        n ... refinement for all elements
+        """
+        solutions = []
+        for mi in range(len(self._meshes)):
+            x_list = []
+            y_list = []
+            for ei in range(len(self._meshes[mi].elements)):
+                e = self._meshes[mi].elements[ei]
+                x_vals = arange(-1, 1, 2./n)
+                for x in x_vals:
+                    y = self.get_sol_value(mi, ei, Y, x)
+                    x_list.append(e.ref2phys(x))
+                    y_list.append(y)
+            solutions.append((x_list, y_list))
+        return solutions

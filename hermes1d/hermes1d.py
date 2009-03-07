@@ -6,6 +6,10 @@ class Node(object):
     def __init__(self, x):
         self._x = x
 
+    @property
+    def x(self):
+        return self._x
+
 class Element(object):
     """
     Represents an element on the mesh, given by two nodes.

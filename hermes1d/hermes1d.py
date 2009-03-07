@@ -181,7 +181,7 @@ class DiscreteProblem(object):
         self._ndofs = i
         return i
 
-    def assemble(self):
+    def assemble_J(self):
         Y = empty((self._ndofs,))
         J = empty((self._ndofs, self._ndofs))
         for m in self._meshes:
@@ -210,3 +210,30 @@ class DiscreteProblem(object):
                         dphi_phi = e.integrate_dphi_phi(j, i)
                         df_phi_phi, err = quadrature(func, -1, 1)
                         J[i_glob, j_glob] += dphi_phi + df_phi_phi
+        return J
+
+    def assemble_F(self):
+        Y = empty((self._ndofs,))
+        F = empty((self._ndofs,))
+        for m in self._meshes:
+            for e in m.elements:
+                for i in range(len(e.dofs)):
+                    i_glob = e.dofs[i]
+                    if i_glob == -1:
+                        continue
+                    mi = self.get_mesh_number(i_glob)
+                    f = self._F(mi)
+                    # now f = f(y1, y2, ..., t)
+                    def func(x):
+                        # x is the integration point, we need to determine
+                        # the values of y1, y2, ... at this integration
+                        # point.
+
+                        # for linear problems, it doesn't matter what those
+                        # values are:
+                        y1 = 0
+                        y2 = 0
+                        return f(y1, y2, x) * e.shape_function(i, x)
+                    df_phi, err = quadrature(func, -1, 1)
+                    F[i_glob] += df_phi
+        return F

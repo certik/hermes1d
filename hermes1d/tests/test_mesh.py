@@ -331,10 +331,15 @@ def test_discrete_problem():
         def f2(y1, y2, t):
             k = 2.0
             return -k**2 * y1
-        if i == 1:
+        if i == 0:
             return f1
-        elif i == 2:
+        elif i == 1:
             return f2
+        raise ValueError("Wrong i (i=%d)." % (i))
     d.set_rhs(F, J)
     d.assign_dofs()
-    d.assemble()
+    J = d.assemble_J()
+    F = d.assemble_F()
+    # solve: J*dY = -F
+    print J
+    print F

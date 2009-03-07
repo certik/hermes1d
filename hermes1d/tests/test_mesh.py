@@ -316,14 +316,15 @@ def test_discrete_problem():
             return -k**2
         def f22(y1, y2, t):
             return 0
-        if i == 1 and j == 1:
+        if i == 0 and j == 0:
             return f11
-        elif i == 1 and j == 2:
+        elif i == 0 and j == 1:
             return f12
-        elif i == 2 and j == 1:
+        elif i == 1 and j == 0:
             return f21
-        elif i == 2 and j == 2:
+        elif i == 1 and j == 1:
             return f22
+        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
     def F(i):
         def f1(y1, y2, t):
             return y2

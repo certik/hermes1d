@@ -67,6 +67,18 @@ class Element(object):
                 }
         return integrals_table[(i, j)]
 
+    def shape_function(self, i, x):
+        """
+        Returns the value of the shape function "i" at the point "x".
+
+        "x" is in the reference domain.
+        """
+        if i == 0:
+            return -0.5*x+0.5
+        if i == 1:
+            return 0.5*x+0.5
+        raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
+
 class Mesh(object):
     """
     Represents a finite element mesh, given by a list of nodes and then by a
@@ -185,8 +197,16 @@ class DiscreteProblem(object):
                         f = self._J(mi, mj)
                         # now f = f(y1, y2, ..., t)
                         def func(x):
-                            y1 = x
-                            return f(x)*phi(i, x)*phi(j, x)
-                        #term_df_phi_phi = quadrature(func, -1, 1)
-                        #J[i_glob, j_glob] += \
-                                #    e.integrate_dphi_phi(j, i) + \
+                            # x is the integration point, we need to determine
+                            # the values of y1, y2, ... at this integration
+                            # point.
+
+                            # for linear problems, it doesn't matter what those
+                            # values are:
+                            y1 = 0
+                            y2 = 0
+                            return f(y1, y2, x) * e.shape_function(i, x) * \
+                                    e.shape_function(j, x)
+                        dphi_phi = e.integrate_dphi_phi(j, i)
+                        df_phi_phi, err = quadrature(func, -1, 1)
+                        J[i_glob, j_glob] += dphi_phi + df_phi_phi

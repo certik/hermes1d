@@ -126,7 +126,7 @@ def test_mesh5():
     assert m.elements[2].dofs[1] == 3
     assert m.elements[2].dofs[2] == 6
 
-def _test_mesh6():
+def test_mesh6():
     n1 = Node(1)
     n2 = Node(3)
     n3 = Node(4)

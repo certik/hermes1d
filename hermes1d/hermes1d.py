@@ -132,3 +132,4 @@ class DiscreteProblem(object):
         i = 0
         for m in self._meshes:
             i = m.assign_dofs(start_i=i)
+        return i

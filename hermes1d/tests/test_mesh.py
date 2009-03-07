@@ -45,13 +45,15 @@ def test_mesh2():
     nodes = (n1, n2, n3, n4)
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == 0
     assert m.elements[0].dofs[1] == 1
     assert m.elements[1].dofs[0] == 1
     assert m.elements[1].dofs[1] == 2
     assert m.elements[2].dofs[0] == 2
     assert m.elements[2].dofs[1] == 3
+
+    assert ndofs == 4
 
 def test_mesh3():
     n1 = Node(1)
@@ -64,7 +66,7 @@ def test_mesh3():
     nodes = (n1, n2, n3, n4)
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == 0
     assert m.elements[0].dofs[1] == 1
     assert m.elements[0].dofs[2] == 4
@@ -74,6 +76,8 @@ def test_mesh3():
     assert m.elements[2].dofs[0] == 2
     assert m.elements[2].dofs[1] == 3
     assert m.elements[2].dofs[2] == 6
+
+    assert ndofs == 7
 
 def test_mesh4():
     n1 = Node(1)
@@ -86,7 +90,7 @@ def test_mesh4():
     nodes = (n1, n2, n3, n4)
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == 0
     assert m.elements[0].dofs[1] == 1
     assert m.elements[0].dofs[2] == 4
@@ -102,6 +106,8 @@ def test_mesh4():
     assert m.elements[2].dofs[2] == 8
     assert m.elements[2].dofs[3] == 9
 
+    assert ndofs == 10
+
 def test_mesh5():
     n1 = Node(1)
     n2 = Node(3)
@@ -113,7 +119,7 @@ def test_mesh5():
     nodes = (n1, n2, n3, n4)
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == 0
     assert m.elements[0].dofs[1] == 1
     assert m.elements[0].dofs[2] == 4
@@ -125,6 +131,8 @@ def test_mesh5():
     assert m.elements[2].dofs[0] == 2
     assert m.elements[2].dofs[1] == 3
     assert m.elements[2].dofs[2] == 6
+
+    assert ndofs == 7
 
 def test_mesh6():
     n1 = Node(1)
@@ -138,7 +146,7 @@ def test_mesh6():
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
     m.set_bc(left=True, value=1)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == -1
     assert m.elements[0].dofs[1] == 0
     assert m.elements[0].dofs[2] == 3
@@ -150,6 +158,8 @@ def test_mesh6():
     assert m.elements[2].dofs[0] == 1
     assert m.elements[2].dofs[1] == 2
     assert m.elements[2].dofs[2] == 5
+
+    assert ndofs == 6
 
 def test_mesh7():
     n1 = Node(1)
@@ -163,7 +173,7 @@ def test_mesh7():
     elements = (e1, e2, e3)
     m = Mesh(nodes, elements)
     m.set_bc(left=False, value=1)
-    m.assign_dofs()
+    ndofs = m.assign_dofs()
     assert m.elements[0].dofs[0] == 0
     assert m.elements[0].dofs[1] == 1
     assert m.elements[0].dofs[2] == 3
@@ -175,6 +185,8 @@ def test_mesh7():
     assert m.elements[2].dofs[0] == 2
     assert m.elements[2].dofs[1] == -1
     assert m.elements[2].dofs[2] == 5
+
+    assert ndofs == 6
 
 def test_mesh8():
     n1 = Node(1)
@@ -242,7 +254,7 @@ def test_mesh9():
     m2.set_bc(left=True, value=1)
 
     d = DiscreteProblem(meshes=[m1, m2])
-    d.assign_dofs()
+    ndofs = d.assign_dofs()
 
     assert m1.elements[0].dofs[0] == 0
     assert m1.elements[0].dofs[1] == 1
@@ -267,3 +279,5 @@ def test_mesh9():
     assert m2.elements[2].dofs[0] == 1 + 6
     assert m2.elements[2].dofs[1] == 2 + 6
     assert m2.elements[2].dofs[2] == 5 + 6
+
+    assert ndofs == 12

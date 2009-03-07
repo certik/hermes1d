@@ -22,6 +22,7 @@ class Element(object):
         self._nodes = (x1, x2)
         self._order = order
         self._dofs = [-1]*(order+1)
+        self._lifts = [0.]*(order+1)
 
     @property
     def nodes(self):
@@ -38,6 +39,9 @@ class Element(object):
     @property
     def jacobian(self):
         return (self._nodes[1].x - self._nodes[0].x)/2
+
+    def get_dirichlet_value(self, i):
+        return self._lifts[i]
 
     def assign_dofs(self, local_dofs, global_dofs):
         """
@@ -140,6 +144,7 @@ class Mesh(object):
         if self._left_lift:
             el_list = self._elements[1:]
             self._elements[0].assign_dofs([1], [i])
+            self._elements[0]._lifts[0] = self._left_value
         else:
             el_list = self._elements
         for e in el_list:
@@ -147,6 +152,7 @@ class Mesh(object):
             i += 1
         if self._right_lift:
             self._elements[-1].assign_dofs([1], [-1])
+            self._elements[-1]._lifts[1] = self._right_value
             i -= 1
 
         # assign bubble functions
@@ -238,8 +244,9 @@ class DiscreteProblem(object):
         val = 0.
         for i, g in enumerate(e.dofs):
             if g == -1:
-                continue
-            val += e.shape_function(i, x)*Y[g]
+                val += e.shape_function(i, x)*e.get_dirichlet_value(i)
+            else:
+                val += e.shape_function(i, x)*Y[g]
         return val
 
     def assemble_F(self):

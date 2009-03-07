@@ -55,7 +55,13 @@ class Element(object):
             self._dofs[l] = g
 
     def integrate_dphi_phi(self, i, j):
-        return 0.0
+        integrals_table = {
+                (0, 0): -0.5,
+                (1, 0): 0.5,
+                (0, 1): -0.5,
+                (1, 1): 0.5,
+                }
+        return integrals_table[(i, j)]
 
     def integrate_df_phi_phi(self, f, i, j):
         return 0.0

@@ -292,6 +292,7 @@ class DiscreteProblem(object):
                         return f(y1, y2, x) * e.shape_function(i, x)
                     f_phi, err = quadrature(func2, -1, 1)
                     f_phi *= e.jacobian
+                    #print "X", i_glob, el_num, i, du_phi, f_phi
                     F[i_glob] += du_phi - f_phi
         return F
 

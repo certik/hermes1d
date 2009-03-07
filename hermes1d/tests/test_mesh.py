@@ -341,7 +341,7 @@ def test_discrete_problem():
     J = d.assemble_J()
     F = d.assemble_F()
     x = d.solve(J, F)
-    print
-    print J
-    print F
-    print x
+    #print
+    #print J
+    #print F
+    #print x

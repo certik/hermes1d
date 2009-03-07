@@ -31,3 +31,11 @@ class Mesh(object):
     def __init__(self, nodes, elements):
         self._nodes = nodes
         self._elements = elements
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @property
+    def elements(self):
+        return self._elements

@@ -2,4 +2,4 @@
 Hermes1D code
 """
 
-from hermes1d import Node, Element, Mesh
+from hermes1d import Node, Element, Mesh, DiscreteProblem

@@ -238,6 +238,7 @@ class DiscreteProblem(object):
                         df_phi_phi, err = quadrature(func, -1, 1)
                         df_phi_phi *= e.jacobian
                         J[i_glob, j_glob] += dphi_phi + df_phi_phi
+                        print "X", i_glob, j_glob, i, dphi_phi, df_phi_phi
         return J
 
     def get_sol_value(self, mesh_num, el_num, Y, x):
@@ -305,7 +306,7 @@ class DiscreteProblem(object):
 
                     f_phi, err = quadrature(func2, -1., 1.)
                     f_phi *= e.jacobian
-                    #print "X", i_glob, el_num, i, du_phi, f_phi, err
+                    #print "X", i_glob, el_num, i, du_phi, f_phi
                     F[i_glob] += du_phi - f_phi
         #print Y
         #print "get_sol_value"
@@ -313,4 +314,4 @@ class DiscreteProblem(object):
         return F
 
     def solve(self, J, F):
-        return solve(J, F)
+        return solve(J, -F)

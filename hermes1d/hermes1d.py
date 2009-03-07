@@ -100,6 +100,17 @@ class Element(object):
             return 0.5
         raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
 
+    def ref2phys(self, xi):
+        """
+        Converts xi to a physical domain.
+
+        xi is in the reference domain, ref2phys returns a point in the phys.
+        domain.
+        """
+        a = self._nodes[0].x
+        b = self._nodes[1].x
+        return (a+b)/2. - (a-b)/2. * xi
+
 class Mesh(object):
     """
     Represents a finite element mesh, given by a list of nodes and then by a
@@ -228,17 +239,22 @@ class DiscreteProblem(object):
                             # values are:
                             y1 = 0
                             y2 = 0
+                            x_phys = e.ref2phys(x)
                             if len(self._meshes) == 1:
-                                return f(y1, x) * e.shape_function(i, x) * \
+                                return f(y1, x_phys) * \
+                                        e.shape_function(i, x) * \
                                         e.shape_function(j, x)
                             else:
-                                return f(y1, y2, x) * e.shape_function(i, x) * \
+                                return f(y1, y2, x_phys) * \
+                                        e.shape_function(i, x) * \
                                         e.shape_function(j, x)
                         dphi_phi = e.integrate_dphi_phi(j, i)
                         df_phi_phi, err = quadrature(func, -1, 1)
                         df_phi_phi *= e.jacobian
                         J[i_glob, j_glob] += dphi_phi - df_phi_phi
-                        print "X", i_glob, j_glob, i, dphi_phi, df_phi_phi
+                        #print f(0, array([-1, -0.9, 0, 0.7, 0.9, 1]))
+                        #stop
+                        #print "X", i_glob, j_glob, i, dphi_phi, df_phi_phi
         return J
 
     def get_sol_value(self, mesh_num, el_num, Y, x):
@@ -294,19 +310,25 @@ class DiscreteProblem(object):
                         y1 = self.get_sol_value(0, el_num, Y, x)
                         #print "y1", el_num, x, y1
                         #print x
+                        x_phys = e.ref2phys(x)
                         if len(self._meshes) == 2:
                             y2 = self.get_sol_value(1, el_num, Y, x)
                         if len(self._meshes) == 1:
-                            return f(y1, x) * e.shape_function(i, x)
+                            return f(y1, x_phys) * e.shape_function(i, x)
                         elif len(self._meshes) == 2:
-                            return f(y1, y2, x) * e.shape_function(i, x)
+                            return f(y1, y2, x_phys) * e.shape_function(i, x)
                     #if el_num == 0:
                     #    print "func", func2(array([-1, -0.9, -0.5, 0, 0.5, 0.9,
                     #        1]))
+                    #print "f", f(0, array([-1, -0.9, -0.5, 0, 0.5, 0.9,
+                    #        1]))
+                    #print "func", func2(array([-1, -0.9, -0.5, 0, 0.5, 0.9,
+                    #        1]))
+                    #stop
 
                     f_phi, err = quadrature(func2, -1., 1.)
                     f_phi *= e.jacobian
-                    #print "X", i_glob, el_num, i, du_phi, f_phi
+                    print "X", i_glob, el_num, i, du_phi, f_phi
                     F[i_glob] += du_phi - f_phi
         #print Y
         #print "get_sol_value"

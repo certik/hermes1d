@@ -228,8 +228,12 @@ class DiscreteProblem(object):
                             # values are:
                             y1 = 0
                             y2 = 0
-                            return f(y1, y2, x) * e.shape_function(i, x) * \
-                                    e.shape_function(j, x)
+                            if len(self._meshes) == 1:
+                                return f(y1, x) * e.shape_function(i, x) * \
+                                        e.shape_function(j, x)
+                            else:
+                                return f(y1, y2, x) * e.shape_function(i, x) * \
+                                        e.shape_function(j, x)
                         dphi_phi = e.integrate_dphi_phi(j, i)
                         df_phi_phi, err = quadrature(func, -1, 1)
                         df_phi_phi *= e.jacobian
@@ -267,9 +271,6 @@ class DiscreteProblem(object):
                         # the values of y1, y2, ... at this integration
                         # point.
 
-                        # XXX: this only works if all the meshes are the same:
-                        y1 = self.get_sol_value(0, el_num, Y, x)
-                        y2 = self.get_sol_value(1, el_num, Y, x)
                         v = 0.
                         for j in range(len(e.dofs)):
                             g = e.dofs[j]
@@ -288,8 +289,13 @@ class DiscreteProblem(object):
 
                         # XXX: this only works if all the meshes are the same:
                         y1 = self.get_sol_value(0, el_num, Y, x)
-                        y2 = self.get_sol_value(1, el_num, Y, x)
-                        return f(y1, y2, x) * e.shape_function(i, x)
+                        if len(self._meshes) == 2:
+                            y2 = self.get_sol_value(1, el_num, Y, x)
+                        if len(self._meshes) == 1:
+                            return f(y1, x) * e.shape_function(i, x)
+                        elif len(self._meshes) == 2:
+                            return f(y1, y2, x) * e.shape_function(i, x)
+
                     f_phi, err = quadrature(func2, -1, 1)
                     f_phi *= e.jacobian
                     #print "X", i_glob, el_num, i, du_phi, f_phi

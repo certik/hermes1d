@@ -287,7 +287,7 @@ def test_mesh9():
     assert d.get_mesh_number(6) == 1
     assert d.get_mesh_number(11) == 1
 
-def test_discrete_problem():
+def test_discrete_problem1():
     n1 = Node(0)
     n2 = Node(1)
     n3 = Node(2)
@@ -335,6 +335,42 @@ def test_discrete_problem():
             return f1
         elif i == 1:
             return f2
+        raise ValueError("Wrong i (i=%d)." % (i))
+    d.set_rhs(F, J)
+    d.assign_dofs()
+    J = d.assemble_J()
+    F = d.assemble_F()
+    x = d.solve(J, F)
+    #print
+    #print J
+    #print F
+    #print x
+
+def test_discrete_problem2():
+    n1 = Node(0)
+    n2 = Node(1)
+    n3 = Node(2)
+    n4 = Node(3)
+    e1 = Element(n1, n2, order=1)
+    e2 = Element(n2, n3, order=1)
+    e3 = Element(n3, n4, order=1)
+    nodes = (n1, n2, n3, n4)
+    elements = (e1, e2, e3)
+    m1 = Mesh(nodes, elements)
+    m1.set_bc(left=True, value=-1)
+
+    d = DiscreteProblem(meshes=[m1])
+    def J(i, j):
+        def f11(y1, t):
+            return -1
+        if i == 0 and j == 0:
+            return f11
+        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
+    def F(i):
+        def f1(y1, t):
+            return -y1
+        if i == 0:
+            return f1
         raise ValueError("Wrong i (i=%d)." % (i))
     d.set_rhs(F, J)
     d.assign_dofs()

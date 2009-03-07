@@ -1,6 +1,6 @@
-from numpy import zeros
+from numpy import zeros, array
 from numpy.linalg import solve
-from quadrature import quadrature
+from quadrature import quadrature, fixed_quad
 
 class Node(object):
     """
@@ -39,7 +39,7 @@ class Element(object):
 
     @property
     def jacobian(self):
-        return (self._nodes[1].x - self._nodes[0].x)/2
+        return (self._nodes[1].x - self._nodes[0].x)/2.
 
     def get_dirichlet_value(self, i):
         return self._lifts[i]
@@ -252,6 +252,7 @@ class DiscreteProblem(object):
                 val += e.shape_function(i, x)*e.get_dirichlet_value(i)
             else:
                 val += e.shape_function(i, x)*Y[g]
+        #print val, e.dofs
         return val
 
     def assemble_F(self):
@@ -278,8 +279,9 @@ class DiscreteProblem(object):
                                 coeff = e.get_dirichlet_value(j)
                             else:
                                 coeff = Y[g]
-                            v += coeff*e.shape_function_deriv(j, x) * \
-                                    e.shape_function(i, x)
+                            v += coeff*e.shape_function_deriv(j, x)
+                        #print "deriv", el_num, x, v
+                        v = v*e.shape_function(i, x)
                         return v
                     du_phi, err = quadrature(func1, -1, 1)
                     def func2(x):
@@ -289,17 +291,25 @@ class DiscreteProblem(object):
 
                         # XXX: this only works if all the meshes are the same:
                         y1 = self.get_sol_value(0, el_num, Y, x)
+                        #print "y1", el_num, x, y1
+                        #print x
                         if len(self._meshes) == 2:
                             y2 = self.get_sol_value(1, el_num, Y, x)
                         if len(self._meshes) == 1:
                             return f(y1, x) * e.shape_function(i, x)
                         elif len(self._meshes) == 2:
                             return f(y1, y2, x) * e.shape_function(i, x)
+                    #if el_num == 0:
+                    #    print "func", func2(array([-1, -0.9, -0.5, 0, 0.5, 0.9,
+                    #        1]))
 
-                    f_phi, err = quadrature(func2, -1, 1)
+                    f_phi, err = quadrature(func2, -1., 1.)
                     f_phi *= e.jacobian
-                    #print "X", i_glob, el_num, i, du_phi, f_phi
+                    #print "X", i_glob, el_num, i, du_phi, f_phi, err
                     F[i_glob] += du_phi - f_phi
+        #print Y
+        #print "get_sol_value"
+        #print self.get_sol_value(0, 0, Y, 1)
         return F
 
     def solve(self, J, F):

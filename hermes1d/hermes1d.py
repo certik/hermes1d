@@ -18,6 +18,10 @@ class Element(object):
     def __init__(self, x1, x2):
         self._nodes = (x1, x2)
 
+    @property
+    def nodes(self):
+        return self._nodes
+
 class Mesh(object):
     """
     Represents a finite element mesh, given by a list of nodes and then by a

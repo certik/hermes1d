@@ -281,19 +281,24 @@ def test_mesh9():
     assert m2.elements[2].dofs[2] == 5 + 6
 
     assert ndofs == 12
+    assert d.get_mesh_number(0) == 0
+    assert d.get_mesh_number(4) == 0
+    assert d.get_mesh_number(5) == 0
+    assert d.get_mesh_number(6) == 1
+    assert d.get_mesh_number(11) == 1
 
 def test_discrete_problem():
-    n1 = Node(1)
-    n2 = Node(3)
-    n3 = Node(4)
-    n4 = Node(5)
+    n1 = Node(0)
+    n2 = Node(1)
+    n3 = Node(2)
+    n4 = Node(3)
     e1 = Element(n1, n2, order=1)
     e2 = Element(n2, n3, order=1)
     e3 = Element(n3, n4, order=1)
     nodes = (n1, n2, n3, n4)
     elements = (e1, e2, e3)
     m1 = Mesh(nodes, elements)
-    m1.set_bc(left=False, value=1)
+    m1.set_bc(left=True, value=0)
     e4 = Element(n1, n2, order=1)
     e5 = Element(n2, n3, order=1)
     e6 = Element(n3, n4, order=1)
@@ -302,11 +307,33 @@ def test_discrete_problem():
     m2.set_bc(left=True, value=1)
 
     d = DiscreteProblem(meshes=[m1, m2])
-    def f1(y1, y2, t):
-        return y2, (0, 1)
-    def f2(y1, y2, t):
-        k = 2.0
-        return -k**2 * y1, (-k**2, 0)
-    d.set_rhs([f1, f2])
+    def J(i, j):
+        def f11(y1, y2, t):
+            return 0
+        def f12(y1, y2, t):
+            return 1
+        def f21(y1, y2, t):
+            return -k**2
+        def f22(y1, y2, t):
+            return 0
+        if i == 1 and j == 1:
+            return f11
+        elif i == 1 and j == 2:
+            return f12
+        elif i == 2 and j == 1:
+            return f21
+        elif i == 2 and j == 2:
+            return f22
+    def F(i):
+        def f1(y1, y2, t):
+            return y2
+        def f2(y1, y2, t):
+            k = 2.0
+            return -k**2 * y1
+        if i == 1:
+            return f1
+        elif i == 2:
+            return f2
+    d.set_rhs(F, J)
     d.assign_dofs()
     d.assemble()

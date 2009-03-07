@@ -116,6 +116,7 @@ class Mesh(object):
             self._right_value = value
 
     def assign_dofs(self, start_i=0):
+        self._start_i = start_i
         # assign the vertex functions
         i = start_i
         if self._left_lift:
@@ -137,6 +138,7 @@ class Mesh(object):
             global_dofs = range(i, i+e.order-1)
             i += e.order-1
             e.assign_dofs(local_dofs, global_dofs)
+        self._end_i = i
         return i
 
 class DiscreteProblem(object):
@@ -150,16 +152,22 @@ class DiscreteProblem(object):
         """
         self._meshes = meshes
 
-    def set_rhs(self, rhs):
+    def set_rhs(self, F, J):
         """
         Sets the rhs for ODE.
 
         Example:
         >>> e = DiscreteProblem([m1, m2])
-        >>> # f1 and f2 are functions of (y1, y2, t)
-        >>> e.set_rhs([f1, f2])
+        >>> e.set_rhs(F, J)
         """
-        self._rhs = rhs
+        self._F = F
+        self._J = J
+
+    def get_mesh_number(self, global_dof_number):
+        for mi, m in enumerate(self._meshes):
+            if m._start_i <= global_dof_number and global_dof_number < m._end_i:
+                return mi
+        raise ValueError("No mesh found.")
 
     def assign_dofs(self):
         """
@@ -177,5 +185,6 @@ class DiscreteProblem(object):
             for e in m.elements:
                 for i in range(len(e.dofs)):
                     for j in range(len(e.dofs)):
-                        J[i, j] = e.integrate_dphi_phi(j, i) + \
-                                e.integrate_df_phi_phi(self._rhs[mi], j, i)
+                        pass
+                    #J[i, j] = e.integrate_dphi_phi(j, i) + \
+                            #            e.integrate_df_phi_phi(self._rhs[mi], j, i)

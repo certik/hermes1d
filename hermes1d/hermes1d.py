@@ -272,7 +272,11 @@ class DiscreteProblem(object):
                         v = 0.
                         for j in range(len(e.dofs)):
                             g = e.dofs[j]
-                            v += Y[g]*e.shape_function_deriv(j, x) * \
+                            if g == -1:
+                                coeff = e.get_dirichlet_value(j)
+                            else:
+                                coeff = Y[g]
+                            v += coeff*e.shape_function_deriv(j, x) * \
                                     e.shape_function(i, x)
                         return v
                     dphi_phi, err = quadrature(func1, -1, 1)

@@ -62,6 +62,9 @@ class Mesh(object):
         self._nodes = nodes
         self._elements = elements
 
+        self._left_lift = False
+        self._right_lift = False
+
     @property
     def nodes(self):
         return self._nodes
@@ -70,10 +73,29 @@ class Mesh(object):
     def elements(self):
         return self._elements
 
+    def set_bc(self, left=True, value=0.0):
+        """
+        Assign the Dirichlet bc to the mesh.
+
+        This is needed during the assigning of dofs.
+
+        left == True .... assign the bc to the left
+        left == False ... assign to the right
+        value ... the value of the function
+        """
+        if left:
+            self._left_lift = True
+            self._left_value = value
+        else:
+            self._right_lift = True
+            self._right_value = value
+
     def assign_dofs(self):
         # assign the vertex functions
-        for i in range(len(self._nodes)-1):
-            self._elements[i].assign_dofs([0, 1], [i, i+1])
+        i = 0
+        for e in self._elements:
+            e.assign_dofs([0, 1], [i, i+1])
+            i += 1
 
         # assign bubble functions
         i = len(self._nodes)

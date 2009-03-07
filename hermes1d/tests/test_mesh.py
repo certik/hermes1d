@@ -125,3 +125,28 @@ def test_mesh5():
     assert m.elements[2].dofs[0] == 2
     assert m.elements[2].dofs[1] == 3
     assert m.elements[2].dofs[2] == 6
+
+def _test_mesh6():
+    n1 = Node(1)
+    n2 = Node(3)
+    n3 = Node(4)
+    n4 = Node(5)
+    e1 = Element(n1, n2, order=3)
+    e2 = Element(n2, n3, order=1)
+    e3 = Element(n3, n4, order=2)
+    nodes = (n1, n2, n3, n4)
+    elements = (e1, e2, e3)
+    m = Mesh(nodes, elements)
+    m.set_bc(left=True, value=1)
+    m.assign_dofs()
+    assert m.elements[0].dofs[0] == -1
+    assert m.elements[0].dofs[1] == 0
+    assert m.elements[0].dofs[2] == 3
+    assert m.elements[0].dofs[3] == 4
+
+    assert m.elements[1].dofs[0] == 0
+    assert m.elements[1].dofs[1] == 1
+
+    assert m.elements[2].dofs[0] == 1
+    assert m.elements[2].dofs[1] == 2
+    assert m.elements[2].dofs[2] == 5

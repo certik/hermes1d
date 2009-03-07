@@ -101,6 +101,9 @@ class Mesh(object):
         for e in el_list:
             e.assign_dofs([0, 1], [i, i+1])
             i += 1
+        if self._right_lift:
+            self._elements[-1].assign_dofs([1], [-1])
+            i -= 1
 
         # assign bubble functions
         i += 1

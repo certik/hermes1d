@@ -15,12 +15,17 @@ class Element(object):
     Represents an element on the mesh, given by two nodes.
     """
 
-    def __init__(self, x1, x2):
+    def __init__(self, x1, x2, order=1):
         self._nodes = (x1, x2)
+        self._order = order
 
     @property
     def nodes(self):
         return self._nodes
+
+    @property
+    def order(self):
+        return self._order
 
 class Mesh(object):
     """

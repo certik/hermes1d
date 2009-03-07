@@ -67,16 +67,6 @@ class Element(object):
                 }
         return integrals_table[(i, j)]
 
-    def integrate_df_phi_phi(self, f, i, j):
-        """
-        Calculates the integral of df * phi * phi on the reference element
-        """
-        return 0.0
-        # this should be now fixed
-        def func(x):
-            return f(x)*phi(i, x)*phi(j, x)
-        return quadrature(func, -1, 1)
-
 class Mesh(object):
     """
     Represents a finite element mesh, given by a list of nodes and then by a
@@ -167,7 +157,7 @@ class DiscreteProblem(object):
         for mi, m in enumerate(self._meshes):
             if m._start_i <= global_dof_number and global_dof_number < m._end_i:
                 return mi
-        raise ValueError("No mesh found.")
+        raise ValueError("No mesh found for global_dof=%d" % global_dof_number)
 
     def assign_dofs(self):
         """
@@ -180,11 +170,23 @@ class DiscreteProblem(object):
         return i
 
     def assemble(self):
+        Y = empty((self._ndofs,))
         J = empty((self._ndofs, self._ndofs))
-        for mi, m in enumerate(self._meshes):
+        for m in self._meshes:
             for e in m.elements:
                 for i in range(len(e.dofs)):
                     for j in range(len(e.dofs)):
-                        pass
-                    #J[i, j] = e.integrate_dphi_phi(j, i) + \
-                            #            e.integrate_df_phi_phi(self._rhs[mi], j, i)
+                        i_glob = e.dofs[i]
+                        j_glob = e.dofs[j]
+                        if i_glob == -1 or j_glob == -1:
+                            continue
+                        mi = self.get_mesh_number(i_glob)
+                        mj = self.get_mesh_number(j_glob)
+                        f = self._J(mi, mj)
+                        # now f = f(y1, y2, ..., t)
+                        def func(x):
+                            y1 = x
+                            return f(x)*phi(i, x)*phi(j, x)
+                        #term_df_phi_phi = quadrature(func, -1, 1)
+                        #J[i_glob, j_glob] += \
+                                #    e.integrate_dphi_phi(j, i) + \

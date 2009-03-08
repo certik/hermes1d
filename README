@@ -1,0 +1,16 @@
+Hermes1D
+========
+
+This is a 1D FEM code. The goal is to have an adaptive hp-FEM in 1D, that
+should be robust enough to solve any ODE (linear or nonlinear) and fast enough
+to compete with any other ODE solver out there.
+
+License: New BSD License (see the LICENSE file for details)
+covers all files in the sympy repository unless stated otherwise.
+
+1. Documentation and usage
+--------------------------
+
+$ python examples/sin.py
+
+This solves y''+y=0 and plots the solution, which is sin(x).

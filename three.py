@@ -21,21 +21,21 @@ def J(i, j):
     def f11(y1, y2, y3, t):
         return 1
     def f12(y1, y2, y3, t):
-        return 1
+        return 0
     def f13(y1, y2, y3, t):
-        return 2
+        return 0
     def f21(y1, y2, y3, t):
-        return 1
+        return -2
     def f22(y1, y2, y3, t):
         return 2
     def f23(y1, y2, y3, t):
-        return 4
+        return 0
     def f31(y1, y2, y3, t):
         return 1
     def f32(y1, y2, y3, t):
-        return 3
+        return 1
     def f33(y1, y2, y3, t):
-        return 8
+        return 4
     if i == 0 and j == 0:
         return f11
     elif i == 0 and j == 1:
@@ -56,12 +56,12 @@ def J(i, j):
         return f33
     raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
 def F(i):
-    def f1(y1, y2, y3, t):
-        return y1+y2+2*y3
-    def f2(y1, y2, y3, t):
-        return y1+2*y2+4*y3
-    def f3(y1, y2, y3, t):
-        return y1+3*y2+8*y3
+    def f1(u1, u2, u3, t):
+        return u1
+    def f2(u1, u2, u3, t):
+        return -2*u1+2*u2
+    def f3(u1, u2, u3, t):
+        return u1+u2+4*u3
     if i == 0:
         return f1
     elif i == 1:
@@ -89,10 +89,12 @@ x = Y
 #print x
 
 from pylab import plot, legend, show
-sln1, sln2 = d.linearize(x, 5)
+sln1, sln2, sln3 = d.linearize(x, 5)
 x1, y1 = sln1
 x2, y2 = sln2
+x3, y3 = sln3
 plot(x1, y1, label="$u_1$")
 plot(x2, y2, label="$u_2$")
+plot(x3, y3, label="$u_3$")
 legend()
 show()

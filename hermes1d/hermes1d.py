@@ -77,28 +77,65 @@ class Element(object):
         i, err = quadrature(func, -1, 1)
         return i
 
-    def shape_function(self, i, x):
+    def shape_function(self, idx, x):
         """
-        Returns the value of the shape function "i" at the point "x".
+        Returns the value of the shape function "idx" at the point "x".
 
         "x" is in the reference domain.
         """
-        if i == 0:
-            return -0.5*x+0.5
-        if i == 1:
-            return 0.5*x+0.5
+        if idx == 0:
+            return (1-x)/2
+        elif idx == 1:
+            return (1+x)/2
+        elif idx == 2:
+            return (x**2-1)*sqrt(3./2)/2
+        elif idx == 3:
+            return (x**2-1)*x*sqrt(5./2)/2
+        elif idx == 4:
+            return (x**2-1)*(5*x**2-1)*sqrt(7./2)/8
+        elif idx == 5:
+            return (x**2-1)*(7*x**2-3)*sqrt(9./2)/8
+        elif idx == 6:
+            return (x**2-1)*(21*x**4-14*x**2+1)*sqrt(11./2)/16
+        elif idx == 7:
+            return (x**2-1)*(33*x**4-30*x**2+5)*sqrt(13./2)/16
+        elif idx == 8:
+            return (x**2-1)*(429*x**6-495*x**4+135*x**2-5)*sqrt(15./2)/128
+        elif idx == 9:
+            return (x**2-1)*(715*x**6-1001*x**4+385*x**2-35)*sqrt(17./2)/128
+        elif idx == 10:
+            return (x**2-1)*(2431*x**8-4004*x**6+2002*x**4-308*x**2+7)*sqrt(19./2)/256
         raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
 
-    def shape_function_deriv(self, i, x):
+    def shape_function_deriv(self, idx, x):
         """
-        Returns the value of the shape function "i" at the point "x".
+        Returns the value of the derivative of the shape function "idx" at the
+        point "x".
 
         "x" is in the reference domain.
         """
-        if i == 0:
+        if idx == 0:
             return -0.5
-        if i == 1:
+        elif idx == 1:
             return 0.5
+        elif idx == 2:
+            return 2*x*sqrt(3./2)/2
+        elif idx == 3:
+            return (3*x**2-1)*sqrt(5./2)/2
+        elif idx == 4:
+            return (20*x**3-12*x)*sqrt(7./2)/8
+        elif idx == 5:
+            return (28*x**3-20*x)*sqrt(9./2)/8
+        elif idx == 6:
+            return (126*x**5-140*x**3+30*x)*sqrt(11./2)/16
+        elif idx == 7:
+            return (198*x**5-252*x**3+70*x)*sqrt(13./2)/16
+        elif idx == 8:
+            return (3432*x**7-5544*x**5+2520*x**3-280*x)*sqrt(15./2)/128
+        elif idx == 9:
+            return (-840*x + 5544*x**3 - 10296*x**5 + 5720*x**7)*sqrt(17./2)/128
+        elif idx == 10:
+            return (630*x - 9240*x**3 + 36036*x**5 - 51480*x**7 + 24310*x**9)*sqrt(19./2)/256
         raise NotImplementedError("Such shape function is not implemented yet (i=%d)" % i)
 
     def ref2phys(self, xi):

@@ -1,6 +1,10 @@
+from math import sqrt
+
+from quadrature import quadrature, fixed_quad
+
 from numpy import zeros, array, arange
 from numpy.linalg import solve
-from quadrature import quadrature, fixed_quad
+from scipy.special.orthogonal import p_roots
 
 class Node(object):
     """
@@ -257,7 +261,7 @@ class DiscreteProblem(object):
                         #print "X", i_glob, j_glob, i, dphi_phi, df_phi_phi
         return J
 
-    def get_sol_value(self, mesh_num, el_num, Y, x):
+    def get_sol_value(self, mesh_num, el_num, Y, x, count_lift=True):
         """
         "x" is on the *reference* element
         """
@@ -266,7 +270,8 @@ class DiscreteProblem(object):
         val = 0.
         for i, g in enumerate(e.dofs):
             if g == -1:
-                val += e.shape_function(i, x)*e.get_dirichlet_value(i)
+                if count_lift:
+                    val += e.shape_function(i, x)*e.get_dirichlet_value(i)
             else:
                 val += e.shape_function(i, x)*Y[g]
         #print val, e.dofs
@@ -295,7 +300,7 @@ class DiscreteProblem(object):
                             g = e.dofs[j]
                             if g == -1:
                                 coeff = e.get_dirichlet_value(j)
-                                print "XX", e.dofs, j
+                                #print "XX", e.dofs, j
                             else:
                                 coeff = Y[g]
                             v += coeff*e.shape_function_deriv(j, x)
@@ -358,3 +363,20 @@ class DiscreteProblem(object):
                     y_list.append(y)
             solutions.append((x_list, y_list))
         return solutions
+
+    def calculate_error_l2_norm(self, dY):
+        solutions = []
+        norm = 0.
+        for mi in range(len(self._meshes)):
+            for ei in range(len(self._meshes[mi].elements)):
+                e = self._meshes[mi].elements[ei]
+                # change this to gauss points:
+                x_vals, w = p_roots(20)
+                norm_e_squared = 0.
+                for i, x in enumerate(x_vals):
+                    norm_e_squared += w[i] * \
+                            self.get_sol_value(mi, ei, dY, x,
+                                    count_lift=False)**2
+                norm_e_squared *= e.jacobian
+                norm += norm_e_squared
+        return sqrt(norm)

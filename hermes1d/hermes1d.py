@@ -272,8 +272,9 @@ class DiscreteProblem(object):
         #print val, e.dofs
         return val
 
-    def assemble_F(self):
-        Y = zeros((self._ndofs,))
+    def assemble_F(self, Y=None):
+        if Y is None:
+            Y = zeros((self._ndofs,))
         F = zeros((self._ndofs,))
         for m in self._meshes:
             for el_num, e in enumerate(m.elements):

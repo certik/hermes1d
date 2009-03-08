@@ -1,3 +1,6 @@
+"""
+Solves a system of ODE, that are coupled by a full matrix.
+"""
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
 from numpy import zeros

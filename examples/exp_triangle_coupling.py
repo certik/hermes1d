@@ -1,3 +1,6 @@
+"""
+Solves the system of ODE, that are coupled by a triangular matrix.
+"""
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
 from numpy import zeros

@@ -1,3 +1,11 @@
+"""
+Solves the second order ODE:
+
+y'' + y = 0
+y(0)=0; y'(0)=1
+
+So the solution is y(x) = sin(x)
+"""
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
 from numpy import zeros

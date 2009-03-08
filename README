@@ -5,6 +5,8 @@ This is a 1D FEM code. The goal is to have an adaptive hp-FEM in 1D, that
 should be robust enough to solve any ODE (linear or nonlinear) and fast enough
 to compete with any other ODE solver out there.
 
+Currently only a nonadaptive FEM is implemented (any order), more below.
+
 License: New BSD License (see the LICENSE file for details)
 covers all files in the sympy repository unless stated otherwise.
 
@@ -14,3 +16,14 @@ covers all files in the sympy repository unless stated otherwise.
 $ python examples/sin.py
 
 This solves y''+y=0 and plots the solution, which is sin(x).
+
+2. Todo
+-------
+
+* write thorough tests for the current functionality and test many different
+  equations together with checks that the solution is correct
+* implement more general way for the user to input any set of ODEs (linear or
+  nonlinear)
+* implement adaptive hp-FEM refinement
+* write the core in C++ and compare with other ODE solvers, do our best to be
+  the best. :) E.g. in terms of speed, error control, robustness, ...

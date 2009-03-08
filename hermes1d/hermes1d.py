@@ -275,15 +275,14 @@ class DiscreteProblem(object):
 
                             # XXX: for linear problems, it doesn't matter what
                             # those values are:
+                            nmeshes = len(self._meshes)
+                            y = [0]*nmeshes
                             y1 = 0
                             y2 = 0
                             x_phys = e.ref2phys(x)
-                            if len(self._meshes) == 1:
-                                return f(y1, x_phys) * \
-                                        e.shape_function(i, x) * \
-                                        e.shape_function(j, x)
-                            else:
-                                return f(y1, y2, x_phys) * \
+                            y.append(x_phys)
+                            f_user = f(*y)
+                            return f_user * \
                                         e.shape_function(i, x) * \
                                         e.shape_function(j, x)
                         dphi_phi = e.integrate_dphi_phi(j, i)
@@ -348,16 +347,11 @@ class DiscreteProblem(object):
                         # point.
 
                         # XXX: this only works if all the meshes are the same:
-                        y1 = self.get_sol_value(0, el_num, Y, x)
-                        #print "y1", el_num, x, y1
-                        #print x
+                        y = [self.get_sol_value(_i, el_num, Y, x) for _i \
+                                in range(len(self._meshes))]
                         x_phys = e.ref2phys(x)
-                        if len(self._meshes) == 2:
-                            y2 = self.get_sol_value(1, el_num, Y, x)
-                        if len(self._meshes) == 1:
-                            return f(y1, x_phys) * e.shape_function(i, x)
-                        elif len(self._meshes) == 2:
-                            return f(y1, y2, x_phys) * e.shape_function(i, x)
+                        y.append(x_phys)
+                        return f(*y) * e.shape_function(i, x)
                     #if el_num == 0:
                     #    print "func", func2(array([-1, -0.9, -0.5, 0, 0.5, 0.9,
                     #        1]))

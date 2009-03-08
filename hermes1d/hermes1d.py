@@ -72,13 +72,10 @@ class Element(object):
         """
         Calculates the integral of dphi*phi on the reference element
         """
-        integrals_table = {
-                (0, 0): -0.5,
-                (1, 0): 0.5,
-                (0, 1): -0.5,
-                (1, 1): 0.5,
-                }
-        return integrals_table[(i, j)]
+        def func(x):
+            return self.shape_function_deriv(i, x) * self.shape_function(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
 
     def shape_function(self, i, x):
         """

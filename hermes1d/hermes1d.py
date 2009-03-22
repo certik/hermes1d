@@ -253,6 +253,13 @@ class DiscreteProblem(object):
         self._ndofs = i
         return i
 
+    @property
+    def ndofs(self):
+        """
+        Returns the total number of dofs.
+        """
+        return self._ndofs
+
     def assemble_J(self, Y):
         J = zeros((self._ndofs, self._ndofs))
         for m in self._meshes:
@@ -413,3 +420,21 @@ class DiscreteProblem(object):
                 norm_e_squared *= e.jacobian
                 norm += norm_e_squared
         return sqrt(norm)
+
+    def get_initial_condition(self):
+        """
+        Calculates the initial vector to the Newton's iteration.
+
+        Notes:
+
+          * This only works if the boundary conditions are all given on the
+            left.  (If this is not the case, this function raises an
+            exception.)
+          * Nodal values are calculated using the implicit Euler method, higher
+            order part is set to zero
+
+        Todo:
+          * For higher order elements one should calculate all the coefficients
+            using projections
+        """
+        return zeros((self._ndofs,))

@@ -68,10 +68,11 @@ def J(i, j):
 d.set_rhs(F, J)
 
 # enumeration of unknowns:
-ndofs = d.assign_dofs()
+d.assign_dofs()
 
 # definition of the initial condition for the Newton method:
-Y = zeros((ndofs,))
+#Y = d.get_initial_condition()
+Y = zeros((d.ndofs,))
 
 # Newton's interation:
 error = 1e10

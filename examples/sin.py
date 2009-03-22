@@ -68,27 +68,27 @@ def J(i, j):
 d.set_rhs(F, J)
 
 # enumeration of unknowns:
-d.assign_dofs()
+ndofs = d.assign_dofs()
 
-J = d.assemble_J()
-Y = zeros((J.shape[0],))
+# definition of the initial condition for the Newton method:
+Y = zeros((ndofs,))
+
+# Newton's interation:
 error = 1e10
 i = 0
 while error > 1e-1:
     F = d.assemble_F(Y)
+    J = d.assemble_J(Y)
     dY = d.solve(J, F)
     error = d.calculate_error_l2_norm(dY)
     print "it=%d, l2_norm=%e" % (i, error)
     Y += dY
     i += 1
-x = Y
-#print
-#print J
-#print F
-#print x
 
+# plot the result:
 from pylab import plot, legend, show
-sln1, sln2 = d.linearize(x, 5)
+# linearize the solution, divide each element into 5
+sln1, sln2 = d.linearize(Y, 5)
 x1, y1 = sln1
 x2, y2 = sln2
 plot(x1, y1, label="$u_1$")

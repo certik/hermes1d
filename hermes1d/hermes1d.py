@@ -253,8 +253,7 @@ class DiscreteProblem(object):
         self._ndofs = i
         return i
 
-    def assemble_J(self):
-        Y = zeros((self._ndofs,))
+    def assemble_J(self, Y):
         J = zeros((self._ndofs, self._ndofs))
         for m in self._meshes:
             for e in m.elements:
@@ -375,8 +374,14 @@ class DiscreteProblem(object):
 
     def linearize(self, Y, n):
         """
+        Linearize the solution
+
         Y ... solution vector (all solutions)
-        n ... refinement for all elements
+        n ... refinement for all elements (how many refinements should be done
+              to one element for the visualization purposes)
+
+        Returns a tuple with all solutions, where each solution contains (x, y)
+        points.
         """
         solutions = []
         for mi in range(len(self._meshes)):

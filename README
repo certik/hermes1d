@@ -15,7 +15,7 @@ covers all files in the sympy repository unless stated otherwise.
 
 Install numpy, scipy and matplotlib, e.g. in Debian/Ubuntu:
 
-$ apt-get install git-core python-matplotlib python-numpy python-scipy
+$ apt-get install python-numpy python-scipy python-matplotlib
 
 Try that it works:
 

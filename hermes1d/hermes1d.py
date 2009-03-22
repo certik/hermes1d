@@ -447,14 +447,13 @@ class DiscreteProblem(object):
                 raise Exception("get_initial_condition_euler() only works if all boundary conditions are given on the left.")
 
             Z[mi, 0] = m._left_value
-        def get_F(Z, tau):
+        def get_F(Z, t):
             """
             Evaluates the RHS for the vector Z and time tau.
             """
             Z0 = zeros((len(self._meshes),))
             for mi, m in enumerate(self._meshes):
-                args = list(Z)+[tau]
-                Z0[mi] = self._F(mi)(*args)
+                Z0[mi] = self._F(mi, Z, t)
             return Z0
         def get_phi(Z, Zprev, tau, t):
             return Z - tau*get_F(Z, t)-tau*Zprev
@@ -462,8 +461,7 @@ class DiscreteProblem(object):
             mat = eye(len(self._meshes))
             for i in range(len(self._meshes)):
                 for j in range(len(self._meshes)):
-                    args = list(Z)+[t]
-                    mat[i, j] += - tau*self._J(i, j)(*args)
+                    mat[i, j] += - tau*self._DFDY(i, j, Z, t)
             return mat
 
         # initial time and initial condition vector:

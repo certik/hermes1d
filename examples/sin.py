@@ -59,8 +59,8 @@ d.define_ode(F, DFDY)
 d.assign_dofs()
 
 # definition of the initial condition for the Newton method:
-#Y = d.get_initial_condition_euler()
-#stop2
+Y = d.get_initial_condition_euler()
+stop2
 Y = zeros((d.ndofs,))
 
 # Newton's iteration:

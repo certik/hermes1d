@@ -231,7 +231,7 @@ class DiscreteProblem(object):
         """
         self._meshes = meshes
 
-    def define_ode(self, F, J):
+    def define_ode(self, F, DFDY):
         """
         Defines the ODE by specifying F and DFDY.
 
@@ -240,7 +240,7 @@ class DiscreteProblem(object):
         >>> e.define_ode(F, DFDY)
         """
         self._F = F
-        self._J = J
+        self._DFDY = DFDY
 
     def get_mesh_number(self, global_dof_number):
         for mi, m in enumerate(self._meshes):
@@ -289,7 +289,7 @@ class DiscreteProblem(object):
                             nmeshes = len(self._meshes)
                             W = [0]*nmeshes
                             x_phys = e.ref2phys(x)
-                            f_user = self._J(mi, mj, W, x_phys)
+                            f_user = self._DFDY(mi, mj, W, x_phys)
                             return f_user * \
                                         e.shape_function(i, x) * \
                                         e.shape_function(j, x)

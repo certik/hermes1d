@@ -231,13 +231,13 @@ class DiscreteProblem(object):
         """
         self._meshes = meshes
 
-    def set_rhs(self, F, J):
+    def define_ode(self, F, J):
         """
-        Sets the rhs for ODE.
+        Defines the ODE by specifying F and DFDY.
 
         Example:
         >>> e = DiscreteProblem([m1, m2])
-        >>> e.set_rhs(F, J)
+        >>> e.define_ode(F, DFDY)
         """
         self._F = F
         self._J = J

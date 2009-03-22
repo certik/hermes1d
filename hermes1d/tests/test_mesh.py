@@ -355,7 +355,7 @@ def test_discrete_problem2():
         if i == 0 and j == 0:
             return -1
         raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
-    d.set_rhs(F, DFDY)
+    d.define_ode(F, DFDY)
     d.assign_dofs()
     Y = zeros((d.ndofs,))
     J = d.assemble_J(Y)

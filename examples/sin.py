@@ -53,7 +53,7 @@ def DFDY(i, j, Y, t):
     raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
 
 # assign both F and J to the discrete problem:
-d.set_rhs(F, DFDY)
+d.define_ode(F, DFDY)
 
 # enumeration of unknowns:
 d.assign_dofs()

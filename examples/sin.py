@@ -33,39 +33,27 @@ m2.set_bc(left=True, value=1)
 d = DiscreteProblem(meshes=[m1, m2])
 
 # definition of the RHS:
-def F(i):
-    def f1(y1, y2, t):
-        return y2
-    def f2(y1, y2, t):
-        return -y1
+def F(i, Y, t):
     if i == 0:
-        return f1
+        return Y[1]
     elif i == 1:
-        return f2
+        return -Y[0]
     raise ValueError("Wrong i (i=%d)." % (i))
 
 # definition of the Jacobian matrix
-def J(i, j):
-    def f11(y1, y2, t):
-        return 0
-    def f12(y1, y2, t):
-        return 1
-    def f21(y1, y2, t):
-        return -1
-    def f22(y1, y2, t):
-        return 0
+def DFDY(i, j, Y, t):
     if i == 0 and j == 0:
-        return f11
+        return 0.
     elif i == 0 and j == 1:
-        return f12
+        return 1.
     elif i == 1 and j == 0:
-        return f21
+        return -1.
     elif i == 1 and j == 1:
-        return f22
+        return 0.
     raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
 
 # assign both F and J to the discrete problem:
-d.set_rhs(F, J)
+d.set_rhs(F, DFDY)
 
 # enumeration of unknowns:
 d.assign_dofs()

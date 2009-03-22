@@ -309,44 +309,29 @@ def _test_discrete_problem1():
     m2.set_bc(left=True, value=1)
 
     d = DiscreteProblem(meshes=[m1, m2])
-    def J(i, j):
-        def f11(y1, y2, t):
-            return 0
-        def f12(y1, y2, t):
-            return 1
-        def f21(y1, y2, t):
-            return -k**2
-        def f22(y1, y2, t):
-            return 0
-        if i == 0 and j == 0:
-            return f11
-        elif i == 0 and j == 1:
-            return f12
-        elif i == 1 and j == 0:
-            return f21
-        elif i == 1 and j == 1:
-            return f22
-        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
-    def F(i):
-        def f1(y1, y2, t):
-            return y2
-        def f2(y1, y2, t):
-            k = 2.0
-            return -k**2 * y1
+    def F(i, Y, t):
         if i == 0:
-            return f1
+            return Y[1]
         elif i == 1:
-            return f2
+            k = 2.0
+            return -k**2 * Y[0]
         raise ValueError("Wrong i (i=%d)." % (i))
-    d.set_rhs(F, J)
+    def DFDY(i, j, Y, t):
+        k = 2.0
+        if i == 0 and j == 0:
+            return 0.
+        elif i == 0 and j == 1:
+            return 1.
+        elif i == 1 and j == 0:
+            return -k**2
+        elif i == 1 and j == 1:
+            return 0.
+        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
+    d.set_rhs(F, DFDY)
     d.assign_dofs()
     J = d.assemble_J()
     F = d.assemble_F()
     x = d.solve(J, F)
-    #print
-    #print J
-    #print F
-    #print x
 
 def test_discrete_problem2():
     n1 = Node(0)
@@ -362,25 +347,17 @@ def test_discrete_problem2():
     m1.set_bc(left=True, value=1)
 
     d = DiscreteProblem(meshes=[m1])
-    def J(i, j):
-        def f11(y1, t):
-            return -1
-        if i == 0 and j == 0:
-            return f11
-        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
-    def F(i):
-        def f1(y1, t):
-            return -y1
+    def F(i, Y, t):
         if i == 0:
-            return f1
+            return -Y[0]
         raise ValueError("Wrong i (i=%d)." % (i))
-    d.set_rhs(F, J)
+    def DFDY(i, j, Y, t):
+        if i == 0 and j == 0:
+            return -1
+        raise ValueError("Wrong i, j (i=%d, j=%d)." % (i, j))
+    d.set_rhs(F, DFDY)
     d.assign_dofs()
     Y = zeros((d.ndofs,))
     J = d.assemble_J(Y)
     F = d.assemble_F()
     x = d.solve(J, F)
-    print
-    print J
-    print F
-    print x

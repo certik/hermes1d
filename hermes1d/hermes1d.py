@@ -277,22 +277,19 @@ class DiscreteProblem(object):
                             continue
                         mi = self.get_mesh_number(i_glob)
                         mj = self.get_mesh_number(j_glob)
-                        f = self._J(mi, mj)
-                        # now f = f(y1, y2, ..., t)
                         def func(x):
                             # x is the integration point, we need to determine
                             # the values of y1, y2, ... at this integration
                             # point.
 
-                            # XXX: for linear problems, it doesn't matter what
-                            # those values are:
+                            # XXX: This only works for linear problems (it
+                            # doesn't matter what  those values are), but it's
+                            # wrong for nonlinear ones and it needs to be
+                            # fixed:
                             nmeshes = len(self._meshes)
-                            y = [0]*nmeshes
-                            y1 = 0
-                            y2 = 0
+                            W = [0]*nmeshes
                             x_phys = e.ref2phys(x)
-                            y.append(x_phys)
-                            f_user = f(*y)
+                            f_user = self._J(mi, mj, W, x_phys)
                             return f_user * \
                                         e.shape_function(i, x) * \
                                         e.shape_function(j, x)
@@ -332,8 +329,6 @@ class DiscreteProblem(object):
                     if i_glob == -1:
                         continue
                     mi = self.get_mesh_number(i_glob)
-                    f = self._F(mi)
-                    # now f = f(y1, y2, ..., t)
                     def func1(x):
                         # x is the integration point, we need to determine
                         # the values of y1, y2, ... at this integration
@@ -361,8 +356,7 @@ class DiscreteProblem(object):
                         y = [self.get_sol_value(_i, el_num, Y, x) for _i \
                                 in range(len(self._meshes))]
                         x_phys = e.ref2phys(x)
-                        y.append(x_phys)
-                        return f(*y) * e.shape_function(i, x)
+                        return self._F(mi, y, x_phys) * e.shape_function(i, x)
                     #if el_num == 0:
                     #    print "func", func2(array([-1, -0.9, -0.5, 0, 0.5, 0.9,
                     #        1]))

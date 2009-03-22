@@ -468,23 +468,27 @@ class DiscreteProblem(object):
             mat = eye(len(self._meshes))
             for i in range(len(self._meshes)):
                 for j in range(len(self._meshes)):
-                    args = list(Z)+[tau]
+                    args = list(Z)+[t]
                     mat[i, j] += - tau*self._J(i, j)(*args)
             return mat
 
-        i = 0
-        t0 = self._meshes[0].elements[0].nodes[0].x
-        tprev = t0
+        # initial time and initial condition vector:
+        tprev = self._meshes[0].elements[0].nodes[0].x
         Zprev = Z[:, 0].copy()
+        Znext = Zprev[:].copy()
         for el_i in range(len(self._meshes[0].elements)):
             print "doing element:", el_i
             tau = self._meshes[0].elements[el_i].length
-            Znext = Zprev[:].copy()
+            print "Znext", Znext
             tnext = tprev + tau
             error = 1e10
+            i = 0
             while error > tol:
                 J = get_J(Zprev, tau, tprev)
+                print J
                 phi = get_phi(Znext, Zprev, tau, tprev)
+                print phi
+                stop
                 dZ = solve(J, -phi)
                 Znext += dZ
                 error_dZ = l2_norm(dZ)
@@ -497,11 +501,13 @@ class DiscreteProblem(object):
             Zprev = Znext[:].copy()
             tprev = tnext
 
+        #print Z
+        #stop
         #from pylab import plot, legend, show
         #plot(range(len(Z[0, :])), Z[0, :], label="$u_1$")
         #plot(range(len(Z[0, :])), Z[1, :], label="$u_2$")
         #legend()
         #show()
 
-        print Z
+        #print Z
         return zeros((self._ndofs,))

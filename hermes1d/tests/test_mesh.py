@@ -1,3 +1,5 @@
+from numpy import zeros
+
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
 def test_node1():
@@ -374,7 +376,8 @@ def test_discrete_problem2():
         raise ValueError("Wrong i (i=%d)." % (i))
     d.set_rhs(F, J)
     d.assign_dofs()
-    J = d.assemble_J()
+    Y = zeros((d.ndofs,))
+    J = d.assemble_J(Y)
     F = d.assemble_F()
     x = d.solve(J, F)
     print

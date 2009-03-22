@@ -71,19 +71,22 @@ d.set_rhs(F, J)
 d.assign_dofs()
 
 # definition of the initial condition for the Newton method:
-#Y = d.get_initial_condition()
+#Y = d.get_initial_condition_euler()
+#stop2
 Y = zeros((d.ndofs,))
 
-# Newton's interation:
+# Newton's iteration:
 error = 1e10
 i = 0
 while error > 1e-1:
     F = d.assemble_F(Y)
     J = d.assemble_J(Y)
     dY = d.solve(J, F)
-    error = d.calculate_error_l2_norm(dY)
-    print "it=%d, l2_norm=%e" % (i, error)
+    error_dY = d.calculate_error_l2_norm(dY)
     Y += dY
+    error_F = d.calculate_error_l2_norm(d.assemble_F(Y))
+    print "it=%d, l2_norm_dY=%e, l2_norm_F=%e" % (i, error_dY, error_F)
+    error = max(error_dY, error_F)
     i += 1
 
 # plot the result:

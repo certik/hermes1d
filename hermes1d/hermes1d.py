@@ -2,8 +2,9 @@ from math import sqrt
 
 from quadrature import quadrature, fixed_quad
 
-from numpy import zeros, array, arange
+from numpy import zeros, array, arange, eye
 from numpy.linalg import solve
+from numpy.linalg import norm as l2_norm
 from scipy.special.orthogonal import p_roots
 
 class Node(object):
@@ -32,6 +33,10 @@ class Element(object):
     @property
     def nodes(self):
         return self._nodes
+
+    @property
+    def length(self):
+        return self._nodes[1].x - self._nodes[0].x
 
     @property
     def order(self):
@@ -405,6 +410,11 @@ class DiscreteProblem(object):
         return solutions
 
     def calculate_error_l2_norm(self, dY):
+        """
+        Returns the L2 norm of the vector dY.
+
+        E.g. the square root of the sum of squares of the components of dY.
+        """
         solutions = []
         norm = 0.
         for mi in range(len(self._meshes)):
@@ -421,7 +431,7 @@ class DiscreteProblem(object):
                 norm += norm_e_squared
         return sqrt(norm)
 
-    def get_initial_condition(self):
+    def get_initial_condition_euler(self, tol=1e-10):
         """
         Calculates the initial vector to the Newton's iteration.
 
@@ -437,4 +447,61 @@ class DiscreteProblem(object):
           * For higher order elements one should calculate all the coefficients
             using projections
         """
+        Z = zeros((len(self._meshes), len(self._meshes[0].elements)+1))
+        for mi, m in enumerate(self._meshes):
+            if not m._left_lift:
+                raise Exception("get_initial_condition_euler() only works if all boundary conditions are given on the left.")
+
+            Z[mi, 0] = m._left_value
+        def get_F(Z, tau):
+            """
+            Evaluates the RHS for the vector Z and time tau.
+            """
+            Z0 = zeros((len(self._meshes),))
+            for mi, m in enumerate(self._meshes):
+                args = list(Z)+[tau]
+                Z0[mi] = self._F(mi)(*args)
+            return Z0
+        def get_phi(Z, Zprev, tau, t):
+            return Z - tau*get_F(Z, t)-tau*Zprev
+        def get_J(Z, tau, t):
+            mat = eye(len(self._meshes))
+            for i in range(len(self._meshes)):
+                for j in range(len(self._meshes)):
+                    args = list(Z)+[tau]
+                    mat[i, j] += - tau*self._J(i, j)(*args)
+            return mat
+
+        i = 0
+        t0 = self._meshes[0].elements[0].nodes[0].x
+        tprev = t0
+        Zprev = Z[:, 0].copy()
+        for el_i in range(len(self._meshes[0].elements)):
+            print "doing element:", el_i
+            tau = self._meshes[0].elements[el_i].length
+            Znext = Zprev[:].copy()
+            tnext = tprev + tau
+            error = 1e10
+            while error > tol:
+                J = get_J(Zprev, tau, tprev)
+                phi = get_phi(Znext, Zprev, tau, tprev)
+                dZ = solve(J, -phi)
+                Znext += dZ
+                error_dZ = l2_norm(dZ)
+                error_phi = l2_norm(get_phi(Znext, Zprev, tau, tnext))
+                print "it=%d, l2_norm_dZ=%e, l2_norm_phi=%e" %  \
+                    (i, error_dZ, error_phi)
+                error = max(error_dZ, error_phi)
+                i += 1
+            Z[:, el_i+1] = Znext[:].copy()
+            Zprev = Znext[:].copy()
+            tprev = tnext
+
+        #from pylab import plot, legend, show
+        #plot(range(len(Z[0, :])), Z[0, :], label="$u_1$")
+        #plot(range(len(Z[0, :])), Z[1, :], label="$u_2$")
+        #legend()
+        #show()
+
+        print Z
         return zeros((self._ndofs,))

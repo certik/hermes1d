@@ -10,8 +10,14 @@ Currently only a nonadaptive FEM is implemented (any order), more below.
 License: New BSD License (see the LICENSE file for details)
 covers all files in the sympy repository unless stated otherwise.
 
-1. Documentation and usage
---------------------------
+1. Installation
+---------------
+
+Install numpy, scipy and matplotlib, e.g. in Debian/Ubuntu:
+
+$ apt-get install git-core python-matplotlib python-numpy python-scipy
+
+Try that it works:
 
 $ python examples/sin.py
 

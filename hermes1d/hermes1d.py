@@ -218,7 +218,20 @@ class Mesh(object):
             i += e.order-1
             e.assign_dofs(local_dofs, global_dofs)
         self._end_i = i
+        self._ndofs = self._end_i - self._start_i
         return i
+
+    @property
+    def ndofs(self):
+        return self._ndofs
+
+    @property
+    def dof_start(self):
+        return self._start_i
+
+    @property
+    def dof_end(self):
+        return self._end_i
 
 class DiscreteProblem(object):
 
@@ -491,10 +504,10 @@ class DiscreteProblem(object):
             Zprev = Znext[:].copy()
             tprev = tnext
 
-        #from pylab import plot, legend, show
-        #plot(range(len(Z[0, :])), Z[0, :], label="$u_1$")
-        #plot(range(len(Z[0, :])), Z[1, :], label="$u_2$")
-        #legend()
-        #show()
-        # XXX: this will work only if the elements are linear
-        return concatenate((Z[0, 1:], Z[1, 1:]))
+
+        # now assign the Z to the vertex dofs and leave zeros in the bubbles
+        Y = zeros((self.ndofs,))
+        for mi, m in enumerate(self._meshes):
+            coeffs_one_mesh = Z[mi, 1:]
+            Y[m.dof_start:m.dof_start+len(coeffs_one_mesh)] = coeffs_one_mesh
+        return Y

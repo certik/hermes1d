@@ -437,9 +437,11 @@ class DiscreteProblem(object):
           * Nodal values are calculated using the implicit Euler method, higher
             order part is set to zero
 
-        Todo:
+        Ideas for improvement:
           * For higher order elements one should calculate all the coefficients
-            using projections
+            using projections: e.g. the implicit Euler method would do several
+            steps in each element and that information would be used for the
+            projection.
         """
         Z = zeros((len(self._meshes), len(self._meshes[0].elements)+1))
         for mi, m in enumerate(self._meshes):

@@ -27,9 +27,12 @@ This solves y''+y=0 and plots the solution, which is sin(x).
 -------
 
 * write thorough tests for the current functionality and test many different
-  equations together with checks that the solution is correct
+  equations together with checks that the solution is correct (currently only
+  very few equations are checked and we do not check for the solution)
 * implement more general way for the user to input any set of ODEs (linear or
   nonlinear)
 * implement adaptive hp-FEM refinement
 * write the core in C++ and compare with other ODE solvers, do our best to be
   the best. :) E.g. in terms of speed, error control, robustness, ...
+* check the global Newton's iteration to see if there is a possibility to speed
+  it up

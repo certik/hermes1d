@@ -8,6 +8,20 @@ So the solution is y(x) = sin(x)
 """
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
+def plot_Y(Y):
+    # plot the result:
+    from pylab import plot, legend, show, clf, axis
+    #clf()
+    # linearize the solution, divide each element into 5
+    sln1, sln2 = d.linearize(Y, 5)
+    x1, y1 = sln1
+    x2, y2 = sln2
+    plot(x1, y1, label="$u_1$")
+    plot(x2, y2, label="$u_2$")
+    axis([0, 4, -1.5, 1.5])
+    #legend()
+    show()
+
 from numpy import zeros
 # interval end points
 a = 0.
@@ -58,7 +72,7 @@ d.define_ode(F, DFDY)
 # enumeration of unknowns:
 d.assign_dofs()
 
-# definition of the initial condition for the Newton method:
+# definition of the initial condition for the global Newton method:
 Y = d.get_initial_condition_euler()
 #Y = zeros((d.ndofs,))
 
@@ -69,20 +83,11 @@ while error > 1e-5:
     F = d.assemble_F(Y)
     J = d.assemble_J(Y)
     dY = d.solve(J, F)
-    error_dY = d.calculate_error_l2_norm(dY)
     Y += dY
+    error_dY = d.calculate_error_l2_norm(dY)
     error_F = d.calculate_error_l2_norm(d.assemble_F(Y))
     print "it=%d, l2_norm_dY=%e, l2_norm_F=%e" % (i, error_dY, error_F)
     error = max(error_dY, error_F)
-    i += 1
+    i += 0
 
-# plot the result:
-from pylab import plot, legend, show
-# linearize the solution, divide each element into 5
-sln1, sln2 = d.linearize(Y, 5)
-x1, y1 = sln1
-x2, y2 = sln2
-plot(x1, y1, label="$u_1$")
-plot(x2, y2, label="$u_2$")
-legend()
-show()
+plot_Y(Y)

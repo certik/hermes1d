@@ -60,13 +60,12 @@ d.assign_dofs()
 
 # definition of the initial condition for the Newton method:
 Y = d.get_initial_condition_euler()
-stop2
-Y = zeros((d.ndofs,))
+#Y = zeros((d.ndofs,))
 
 # Newton's iteration:
 error = 1e10
 i = 0
-while error > 1e-1:
+while error > 1e-5:
     F = d.assemble_F(Y)
     J = d.assemble_J(Y)
     dY = d.solve(J, F)

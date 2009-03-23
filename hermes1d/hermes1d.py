@@ -2,7 +2,7 @@ from math import sqrt
 
 from quadrature import quadrature, fixed_quad
 
-from numpy import zeros, array, arange, eye
+from numpy import zeros, array, arange, eye, concatenate
 from numpy.linalg import solve
 from numpy.linalg import norm as l2_norm
 from scipy.special.orthogonal import p_roots
@@ -469,9 +469,8 @@ class DiscreteProblem(object):
         Zprev = Z[:, 0].copy()
         Znext = Zprev[:].copy()
         for el_i in range(len(self._meshes[0].elements)):
-            print "doing element:", el_i
+            #print "doing element:", el_i
             tau = self._meshes[0].elements[el_i].length
-            print "Znext", Znext
             tnext = tprev + tau
             error = 1e10
             i = 0
@@ -482,8 +481,8 @@ class DiscreteProblem(object):
                 Znext += dZ
                 error_dZ = l2_norm(dZ)
                 error_phi = l2_norm(get_phi(Znext, Zprev, tau, tnext))
-                print "it=%d, l2_norm_dZ=%e, l2_norm_phi=%e" %  \
-                    (i, error_dZ, error_phi)
+                #print "it=%d, l2_norm_dZ=%e, l2_norm_phi=%e" %  \
+                #    (i, error_dZ, error_phi)
                 error = max(error_dZ, error_phi)
                 i += 1
             Z[:, el_i+1] = Znext[:].copy()
@@ -495,5 +494,5 @@ class DiscreteProblem(object):
         #plot(range(len(Z[0, :])), Z[1, :], label="$u_2$")
         #legend()
         #show()
-
-        return zeros((self._ndofs,))
+        # XXX: this will work only if the elements are linear
+        return concatenate((Z[0, 1:], Z[1, 1:]))

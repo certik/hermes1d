@@ -19,6 +19,10 @@ class Node(object):
     def x(self):
         return self._x
 
+    def __repr__(self):
+        s = "<Node x=%f>" % self._x
+        return s
+
 class Element(object):
     """
     Represents an element on the mesh, given by two nodes.
@@ -400,7 +404,7 @@ class DiscreteProblem(object):
               to one element for the visualization purposes)
 
         Returns a tuple with all solutions, where each solution contains (x, y)
-        points.
+        points, which you can just plot.
         """
         solutions = []
         for mi in range(len(self._meshes)):
@@ -408,11 +412,21 @@ class DiscreteProblem(object):
             y_list = []
             for ei in range(len(self._meshes[mi].elements)):
                 e = self._meshes[mi].elements[ei]
-                x_vals = arange(-1, 1, 2./n)
+                #XXX: this produces a list [-1, ... 1], which means that the
+                # values on the right of the element and on the left of the next
+                # element will be the same. This could be improved
+                delta_x = 2./n
+                x_vals = zeros(n+1)
+                for i in range(n+1):
+                    x_vals[i] = -1+i*delta_x
+                #x_vals = arange(-1, 1, 2./n)
+                #print mi, ei, x_vals
                 for x in x_vals:
                     y = self.get_sol_value(mi, ei, Y, x)
                     x_list.append(e.ref2phys(x))
                     y_list.append(y)
+                #print x_list
+                #print y_list
             solutions.append((x_list, y_list))
         return solutions
 

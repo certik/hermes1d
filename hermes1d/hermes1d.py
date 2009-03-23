@@ -456,7 +456,7 @@ class DiscreteProblem(object):
                 Z0[mi] = self._F(mi, Z, t)
             return Z0
         def get_phi(Z, Zprev, tau, t):
-            return Z - tau*get_F(Z, t)-tau*Zprev
+            return Z - tau*get_F(Z, t) - Zprev
         def get_J(Z, tau, t):
             mat = eye(len(self._meshes))
             for i in range(len(self._meshes)):
@@ -477,10 +477,7 @@ class DiscreteProblem(object):
             i = 0
             while error > tol:
                 J = get_J(Zprev, tau, tprev)
-                print J
                 phi = get_phi(Znext, Zprev, tau, tprev)
-                print phi
-                stop
                 dZ = solve(J, -phi)
                 Znext += dZ
                 error_dZ = l2_norm(dZ)
@@ -493,13 +490,10 @@ class DiscreteProblem(object):
             Zprev = Znext[:].copy()
             tprev = tnext
 
-        #print Z
-        #stop
         #from pylab import plot, legend, show
         #plot(range(len(Z[0, :])), Z[0, :], label="$u_1$")
         #plot(range(len(Z[0, :])), Z[1, :], label="$u_2$")
         #legend()
         #show()
 
-        #print Z
         return zeros((self._ndofs,))

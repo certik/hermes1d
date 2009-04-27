@@ -28,10 +28,10 @@ def plot_Y(Y, a, b):
 
 # interval end points
 a = 0.
-b = pi*(1./4+1)
+b = 1.
 
 # number of elements:
-N = 20
+N = 30
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -42,25 +42,48 @@ nodes = [Node(x) for x in x_values]
 # define elements of the 1st mesh
 elements = [Element(nodes[i], nodes[i+1], order=2) for i in range(N)]
 m1 = Mesh(nodes, elements)
-m1.set_bc(left=True, value=0)
 
-# define elements of the 2nd mesh
-elements = [Element(nodes[i], nodes[i+1], order=1) for i in range(N)]
-m2 = Mesh(nodes, elements)
-m2.set_bc(left=True, value=1)
+def schroed_l(m, l=0):
+    #if l == 0:
+    #    m.set_bc(left=True, value=1)
+    #else:
+    #    m.set_bc(left=True, value=0)
+    m.set_bc(left=False, value=0)
 
-# definition of the ODE system:
-d = DiscreteProblem(meshes=[m1, m2])
+    # definition of the ODE system:
+    d = DiscreteProblem(meshes=[m])
 
-# enumeration of unknowns:
-d.assign_dofs()
+    # enumeration of unknowns:
+    d.assign_dofs()
 
-print "assembling"
-A = d.assemble_schroed(rhs=False)
-B = d.assemble_schroed(rhs=True)
-print "inverting"
-M = inv(B)*A
-print "solving:"
-w, v = eigh(M)
-print w
-print v
+    print "assembling"
+    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
+    B = d.assemble_schroed(rhs=True)
+    print "inverting"
+    M = inv(B)*A
+    print "solving:"
+    w, v = eigh(M)
+    # sort w and v:
+    r = []
+    for i in range(len(w)):
+        x, y = d.linearize(v[:, i], 4)[0]
+        r.append((w[i], v[:, i], l, x, y))
+    r.sort(key=lambda x: x[0])
+    return r
+
+r = schroed_l(m1, l=0)
+#r.extend(schroed_l(m1, l=1))
+#r.extend(schroed_l(m1, l=2))
+#r.extend(schroed_l(m1, l=3))
+#r.sort(key=lambda x: x[0])
+print "results:"
+for i in range(50):
+    w, v, l, x, y = r[i]
+    print "l=%d; E=%f" % (l, w)
+print "plotting:"
+from pylab import plot, show, legend
+for i in range(5):
+    w, v, l, x, y = r[i]
+    plot(x, y, label="l=%d, eig=%f" % (l, w))
+legend()
+show()

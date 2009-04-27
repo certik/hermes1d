@@ -110,6 +110,18 @@ class Element(object):
         i, err = quadrature(func, -1, 1)
         return i
 
+    def integrate_phi_phi_x(self, i, j):
+        """
+        Calculates the integral of phi*phi*x* on the reference element.
+        """
+        def func(x):
+            x_phys = self.ref2phys(x)
+            return x_phys * \
+                        self.shape_function(i, x) * \
+                        self.shape_function(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
     def integrate_phi_phi(self, i, j):
         """
         Calculates the integral of phi*phi on the reference element.
@@ -315,7 +327,7 @@ class DiscreteProblem(object):
         """
         return self._ndofs
 
-    def assemble_schroed(self, rhs=True):
+    def assemble_schroed(self, rhs=True, l=0., pot="well"):
         J = zeros((self._ndofs, self._ndofs))
         for m in self._meshes:
             for e in m.elements:
@@ -330,8 +342,12 @@ class DiscreteProblem(object):
                         if rhs:
                             val = e.integrate_phi_phi_x_x(j, i)
                         else:
-                            l = 1.0
+                            if pot == "well":
+                                pot_term = 0.
+                            elif pot == "hydrogen":
+                                pot_term = -e.integrate_phi_phi_x(j, i)
                             val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
+                                    pot_term + \
                                     0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
                         val *= e.jacobian
                         J[i_glob, j_glob] += val

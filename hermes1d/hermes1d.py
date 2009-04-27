@@ -79,10 +79,43 @@ class Element(object):
 
     def integrate_dphi_phi(self, i, j):
         """
-        Calculates the integral of dphi*phi on the reference element
+        Calculates the integral of dphi*phi on the reference element.
         """
         def func(x):
             return self.shape_function_deriv(i, x) * self.shape_function(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
+    def integrate_dphi_dphi_x_x(self, i, j):
+        """
+        Calculates the integral of dphi*dphi*x**2 on the reference element.
+        """
+        def func(x):
+            x_phys = self.ref2phys(x)
+            return x_phys**2 * \
+                        self.shape_function_deriv(i, x) * \
+                        self.shape_function_deriv(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
+    def integrate_phi_phi_x_x(self, i, j):
+        """
+        Calculates the integral of phi*phi*x**2 on the reference element.
+        """
+        def func(x):
+            x_phys = self.ref2phys(x)
+            return x_phys**2 * \
+                        self.shape_function(i, x) * \
+                        self.shape_function(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
+    def integrate_phi_phi(self, i, j):
+        """
+        Calculates the integral of phi*phi on the reference element.
+        """
+        def func(x):
+            return self.shape_function(i, x) * self.shape_function(j, x)
         i, err = quadrature(func, -1, 1)
         return i
 
@@ -281,6 +314,28 @@ class DiscreteProblem(object):
         Returns the total number of dofs.
         """
         return self._ndofs
+
+    def assemble_schroed(self, rhs=True):
+        J = zeros((self._ndofs, self._ndofs))
+        for m in self._meshes:
+            for e in m.elements:
+                for i in range(len(e.dofs)):
+                    for j in range(len(e.dofs)):
+                        i_glob = e.dofs[i]
+                        j_glob = e.dofs[j]
+                        if i_glob == -1 or j_glob == -1:
+                            continue
+                        mi = self.get_mesh_number(i_glob)
+                        mj = self.get_mesh_number(j_glob)
+                        if rhs:
+                            val = e.integrate_phi_phi_x_x(j, i)
+                        else:
+                            l = 1.0
+                            val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
+                                    0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
+                        val *= e.jacobian
+                        J[i_glob, j_glob] += val
+        return J
 
     def assemble_J(self, Y):
         J = zeros((self._ndofs, self._ndofs))

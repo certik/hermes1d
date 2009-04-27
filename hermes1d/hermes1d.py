@@ -112,11 +112,23 @@ class Element(object):
 
     def integrate_phi_phi_x(self, i, j):
         """
-        Calculates the integral of phi*phi*x* on the reference element.
+        Calculates the integral of phi*phi*x on the reference element.
         """
         def func(x):
             x_phys = self.ref2phys(x)
             return x_phys * \
+                        self.shape_function(i, x) * \
+                        self.shape_function(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
+    def integrate_phi_phi_x_x_x_x(self, i, j):
+        """
+        Calculates the integral of phi*phi*x**4 on the reference element.
+        """
+        def func(x):
+            x_phys = self.ref2phys(x)
+            return x_phys**4 * \
                         self.shape_function(i, x) * \
                         self.shape_function(j, x)
         i, err = quadrature(func, -1, 1)
@@ -346,6 +358,8 @@ class DiscreteProblem(object):
                                 pot_term = 0.
                             elif pot == "hydrogen":
                                 pot_term = -e.integrate_phi_phi_x(j, i)
+                            elif pot == "oscillator":
+                                pot_term = e.integrate_phi_phi_x_x_x_x(j, i)
                             val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
                                     pot_term + \
                                     0.5 * (l+1) * l * e.integrate_phi_phi(j, i)

@@ -19,6 +19,10 @@ class Node(object):
     def x(self):
         return self._x
 
+    def __str__(self):
+        s = "(%f)" % self._x
+        return s
+
     def __repr__(self):
         s = "<Node x=%f>" % self._x
         return s
@@ -53,6 +57,15 @@ class Element(object):
     @property
     def jacobian(self):
         return (self._nodes[1].x - self._nodes[0].x)/2.
+
+    def __str__(self):
+        return "El(%2d (x=%f), %2d (x=%f), order=%d)" % (
+                self._dofs[0],
+                self._nodes[0].x,
+                self._dofs[1],
+                self._nodes[1].x,
+                self._order,
+                )
 
     def get_dirichlet_value(self, i):
         return self._lifts[i]
@@ -237,6 +250,13 @@ class Mesh(object):
 
         self._left_lift = False
         self._right_lift = False
+
+    def __str__(self):
+        s = "Mesh, nodes=%d elements=%d\n" % (len(self._nodes),
+                len(self._elements))
+        for i, e in enumerate(self._elements):
+            s += "  el_id=%d: %s\n" % (i, str(e))
+        return s
 
     @property
     def nodes(self):

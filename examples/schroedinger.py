@@ -9,7 +9,7 @@ So the solution is y(x) = sin(x)
 from hermes1d import Node, Element, Mesh, DiscreteProblem
 
 from math import pi
-from numpy import zeros
+from numpy import zeros, dot
 from numpy.linalg import inv, eig, eigh
 
 def plot_Y(Y, a, b):
@@ -29,10 +29,10 @@ def plot_Y(Y, a, b):
 # interval end points
 a = 0.
 #b = pi
-b = 20
+b = 10
 
 # number of elements:
-N = 100
+N = 20
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -49,7 +49,7 @@ def schroed_l(m, l=0):
     #    m.set_bc(left=True, value=-1)
     #else:
     #    m.set_bc(left=True, value=0)
-    m.set_bc(left=False, value=0)
+    #m.set_bc(left=False, value=0)
 
     # definition of the ODE system:
     d = DiscreteProblem(meshes=[m])
@@ -61,15 +61,26 @@ def schroed_l(m, l=0):
     #stop
 
     print "assembling"
-    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
-    B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen")
+    #A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
+    #B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen")
+    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen", a=b)
+    B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen", a=b)
     print A
     print B
+    #print inv(A)
+    #print inv(B)
+    from numpy import matrix, array
+    print "test"
+    print A
+    print inv(A)
+    #print inv(B)
+    print dot(inv(A), A)
+    #print dot(inv(B), B)
     #stop
     print "inverting"
-    from numpy import matrix, array
     M = matrix(inv(B))*matrix(A)
     M = array(M)
+    print M
     print "solving:"
     w, v = eig(M)
     print w

@@ -29,6 +29,7 @@ def plot_Y(Y, a, b):
 # interval end points
 a = 0.
 b = pi
+#b = 5
 
 # number of elements:
 N = 50
@@ -40,7 +41,7 @@ x_values =[(b-a)/N * i for i in range(N+1)]
 nodes = [Node(x) for x in x_values]
 
 # define elements of the 1st mesh
-elements = [Element(nodes[i], nodes[i+1], order=1) for i in range(N)]
+elements = [Element(nodes[i], nodes[i+1], order=2) for i in range(N)]
 m1 = Mesh(nodes, elements)
 
 def schroed_l(m, l=0):
@@ -64,12 +65,13 @@ def schroed_l(m, l=0):
     B = d.assemble_schroed(rhs=True, pot="well1d")
     print A
     print B
+    #stop
     print "inverting"
     from numpy import matrix, array
     M = matrix(inv(B))*matrix(A)
     M = array(M)
     print "solving:"
-    w, v = eigh(M)
+    w, v = eig(M)
     print w
     vec = v[:, 0]
     print vec
@@ -78,6 +80,7 @@ def schroed_l(m, l=0):
     #pdb.set_trace()
     print matrix(A)*matrix(vec).T
     print w[0]*matrix(B)*matrix(vec).T
+    #stop
     #stop
     # sort w and v:
     r = []
@@ -99,12 +102,12 @@ r = schroed_l(m1, l=0)
 #r.extend(schroed_l(m1, l=3))
 r.sort(key=lambda x: x[0])
 print "results:"
-for i in range(4):
-    w, v, l, x, y = r[i]
-    print "l=%d; E=%f" % (l, w)
+#for i in range(4):
+#    w, v, l, x, y = r[i]
+#    print "l=%d; E=%f" % (l, w)
 print "plotting:"
 from pylab import plot, show, legend
-for i in range(1):
+for i in range(4):
     w, v, l, x, y = r[i]
     plot(x, y, label="l=%d, eig=%f" % (l, w))
 legend()

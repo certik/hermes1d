@@ -404,7 +404,7 @@ class DiscreteProblem(object):
                                         pot_term + \
                                         0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
                         val *= e.jacobian
-                        print i_glob, j_glob, val, e.jacobian
+                        #print i_glob, j_glob, val, e.jacobian
                         J[i_glob, j_glob] += val
         return J
 

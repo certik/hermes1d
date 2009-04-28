@@ -98,6 +98,16 @@ class Element(object):
         i, err = quadrature(func, -1, 1)
         return i
 
+    def integrate_dphi_dphi(self, i, j):
+        """
+        Calculates the integral of dphi*dphi on the reference element.
+        """
+        def func(x):
+            return self.shape_function_deriv(i, x) * \
+                        self.shape_function_deriv(j, x)
+        i, err = quadrature(func, -1, 1)
+        return i
+
     def integrate_phi_phi_x_x(self, i, j):
         """
         Calculates the integral of phi*phi*x**2 on the reference element.
@@ -282,6 +292,10 @@ class Mesh(object):
         self._ndofs = self._end_i - self._start_i
         return i
 
+    def print_dofs(self):
+        for e in self._elements:
+            print e.print_dofs(self)
+
     @property
     def ndofs(self):
         return self._ndofs
@@ -352,17 +366,23 @@ class DiscreteProblem(object):
                         mi = self.get_mesh_number(i_glob)
                         mj = self.get_mesh_number(j_glob)
                         if rhs:
-                            val = e.integrate_phi_phi_x_x(j, i)
+                            if pot == "well1d":
+                                val = e.integrate_phi_phi(j, i)
+                            else:
+                                val = e.integrate_phi_phi_x_x(j, i)
                         else:
-                            if pot == "well":
-                                pot_term = 0.
-                            elif pot == "hydrogen":
-                                pot_term = -e.integrate_phi_phi_x(j, i)
-                            elif pot == "oscillator":
-                                pot_term = e.integrate_phi_phi_x_x_x_x(j, i)
-                            val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
-                                    pot_term + \
-                                    0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
+                            if pot == "well1d":
+                                val = e.integrate_dphi_dphi(j, i)
+                            else:
+                                if pot == "well":
+                                    pot_term = 0.
+                                elif pot == "hydrogen":
+                                    pot_term = -e.integrate_phi_phi_x(j, i)
+                                elif pot == "oscillator":
+                                    pot_term = e.integrate_phi_phi_x_x_x_x(j, i)
+                                val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
+                                        pot_term + \
+                                        0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
                         val *= e.jacobian
                         J[i_glob, j_glob] += val
         return J

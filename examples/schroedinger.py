@@ -28,10 +28,10 @@ def plot_Y(Y, a, b):
 
 # interval end points
 a = 0.
-b = 1.
+b = pi
 
 # number of elements:
-N = 20
+N = 5
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -55,19 +55,29 @@ def schroed_l(m, l=0):
 
     # enumeration of unknowns:
     d.assign_dofs()
+    print m
+    stop
 
     print "assembling"
-    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
-    B = d.assemble_schroed(rhs=True)
+    A = d.assemble_schroed(rhs=False, pot="well1d")
+    B = d.assemble_schroed(rhs=True, pot="well1d")
+    print A
+    print B
+    #stop
     print "inverting"
     M = inv(B)*A
     print "solving:"
     w, v = eigh(M)
+    #print w
+    #print v[0, :]
+    #stop
     # sort w and v:
     r = []
     for i in range(len(w)):
-        x, y = d.linearize(v[:, i], 4)[0]
-        r.append((w[i], v[:, i], l, x, y))
+        #vec = v[i, :]
+        vec = v[:, i]
+        x, y = d.linearize(vec, 10)[0]
+        r.append((w[i], vec, l, x, y))
     r.sort(key=lambda x: x[0])
     return r
 
@@ -77,12 +87,12 @@ r = schroed_l(m1, l=0)
 #r.extend(schroed_l(m1, l=3))
 r.sort(key=lambda x: x[0])
 print "results:"
-for i in range(10):
+for i in range(4):
     w, v, l, x, y = r[i]
     print "l=%d; E=%f" % (l, w)
 print "plotting:"
 from pylab import plot, show, legend
-for i in range(5):
+for i in range(1):
     w, v, l, x, y = r[i]
     plot(x, y, label="l=%d, eig=%f" % (l, w))
 legend()

@@ -29,6 +29,7 @@ def plot_Y(Y, a, b):
 # interval end points
 a = 0.
 b = pi
+b = 5.
 
 # number of elements:
 N = 5
@@ -40,7 +41,7 @@ x_values =[(b-a)/N * i for i in range(N+1)]
 nodes = [Node(x) for x in x_values]
 
 # define elements of the 1st mesh
-elements = [Element(nodes[i], nodes[i+1], order=2) for i in range(N)]
+elements = [Element(nodes[i], nodes[i+1], order=1) for i in range(N)]
 m1 = Mesh(nodes, elements)
 
 def schroed_l(m, l=0):
@@ -55,8 +56,9 @@ def schroed_l(m, l=0):
 
     # enumeration of unknowns:
     d.assign_dofs()
-    print m
-    stop
+    #print m
+    m.print_dofs()
+    #stop
 
     print "assembling"
     A = d.assemble_schroed(rhs=False, pot="well1d")
@@ -65,17 +67,29 @@ def schroed_l(m, l=0):
     print B
     #stop
     print "inverting"
-    M = inv(B)*A
+    from numpy import matrix, array
+    M = matrix(inv(B))*matrix(A)
+    M = array(M)
     print "solving:"
     w, v = eigh(M)
-    #print w
-    #print v[0, :]
+    print w
+    vec = v[:, 0]
+    print vec
+    print "test"
+    #import pdb
+    #pdb.set_trace()
+    print matrix(A)*matrix(vec).T
+    print w[0]*matrix(B)*matrix(vec).T
     #stop
     # sort w and v:
     r = []
     for i in range(len(w)):
         #vec = v[i, :]
         vec = v[:, i]
+        #print "ooo"
+        #print v
+        #print v[:, i]
+        #stop
         x, y = d.linearize(vec, 10)[0]
         r.append((w[i], vec, l, x, y))
     r.sort(key=lambda x: x[0])

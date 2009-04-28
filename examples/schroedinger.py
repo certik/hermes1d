@@ -28,10 +28,10 @@ def plot_Y(Y, a, b):
 
 # interval end points
 a = 0.
-b = 10.
+b = 1.
 
 # number of elements:
-N = 50
+N = 20
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -45,7 +45,7 @@ m1 = Mesh(nodes, elements)
 
 def schroed_l(m, l=0):
     if l == 0:
-        m.set_bc(left=True, value=1)
+        m.set_bc(left=True, value=0)
     else:
         m.set_bc(left=True, value=0)
     m.set_bc(left=False, value=0)
@@ -57,7 +57,7 @@ def schroed_l(m, l=0):
     d.assign_dofs()
 
     print "assembling"
-    A = d.assemble_schroed(rhs=False, l=l, pot="oscillator")
+    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
     B = d.assemble_schroed(rhs=True)
     print "inverting"
     M = inv(B)*A
@@ -71,10 +71,10 @@ def schroed_l(m, l=0):
     r.sort(key=lambda x: x[0])
     return r
 
-r = schroed_l(m1, l=1)
-r.extend(schroed_l(m1, l=1))
-r.extend(schroed_l(m1, l=2))
-r.extend(schroed_l(m1, l=3))
+r = schroed_l(m1, l=0)
+#r.extend(schroed_l(m1, l=1))
+#r.extend(schroed_l(m1, l=2))
+#r.extend(schroed_l(m1, l=3))
 r.sort(key=lambda x: x[0])
 print "results:"
 for i in range(10):

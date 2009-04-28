@@ -28,11 +28,11 @@ def plot_Y(Y, a, b):
 
 # interval end points
 a = 0.
-b = pi
-#b = 5
+#b = pi
+b = 20
 
 # number of elements:
-N = 50
+N = 100
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -45,10 +45,10 @@ elements = [Element(nodes[i], nodes[i+1], order=2) for i in range(N)]
 m1 = Mesh(nodes, elements)
 
 def schroed_l(m, l=0):
-    if l == 0:
-        m.set_bc(left=True, value=0)
-    else:
-        m.set_bc(left=True, value=0)
+    #if l == 0:
+    #    m.set_bc(left=True, value=-1)
+    #else:
+    #    m.set_bc(left=True, value=0)
     m.set_bc(left=False, value=0)
 
     # definition of the ODE system:
@@ -61,8 +61,8 @@ def schroed_l(m, l=0):
     #stop
 
     print "assembling"
-    A = d.assemble_schroed(rhs=False, pot="well1d")
-    B = d.assemble_schroed(rhs=True, pot="well1d")
+    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
+    B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen")
     print A
     print B
     #stop
@@ -97,9 +97,9 @@ def schroed_l(m, l=0):
     return r
 
 r = schroed_l(m1, l=0)
-#r.extend(schroed_l(m1, l=1))
-#r.extend(schroed_l(m1, l=2))
-#r.extend(schroed_l(m1, l=3))
+r.extend(schroed_l(m1, l=1))
+r.extend(schroed_l(m1, l=2))
+r.extend(schroed_l(m1, l=3))
 r.sort(key=lambda x: x[0])
 print "results:"
 #for i in range(4):
@@ -107,7 +107,7 @@ print "results:"
 #    print "l=%d; E=%f" % (l, w)
 print "plotting:"
 from pylab import plot, show, legend
-for i in range(4):
+for i in range(5):
     w, v, l, x, y = r[i]
     plot(x, y, label="l=%d, eig=%f" % (l, w))
 legend()

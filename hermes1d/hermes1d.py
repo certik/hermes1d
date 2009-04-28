@@ -400,7 +400,7 @@ class DiscreteProblem(object):
                                     pot_term = -e.integrate_phi_phi_x(j, i)
                                 elif pot == "oscillator":
                                     pot_term = e.integrate_phi_phi_x_x_x_x(j, i)
-                                val = 0.5 * e.integrate_dphi_dphi_x_x(j, i) + \
+                                val = 0.5 * e.integrate_dphi_dphi_x_x(j, i)/e.jacobian**2 + \
                                         pot_term + \
                                         0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
                         val *= e.jacobian

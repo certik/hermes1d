@@ -313,8 +313,8 @@ class Mesh(object):
         return i
 
     def print_dofs(self):
-        for e in self._elements:
-            print e.print_dofs(self)
+        for e_id, e in enumerate(self._elements):
+            print "el=%d; dofs=%s" % (e_id, e.dofs)
 
     @property
     def ndofs(self):

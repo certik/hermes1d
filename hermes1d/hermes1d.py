@@ -392,7 +392,7 @@ class DiscreteProblem(object):
                                 val = e.integrate_phi_phi_x_x(j, i)
                         else:
                             if pot == "well1d":
-                                val = e.integrate_dphi_dphi(j, i)
+                                val = e.integrate_dphi_dphi(j, i)/e.jacobian**2
                             else:
                                 if pot == "well":
                                     pot_term = 0.
@@ -404,6 +404,7 @@ class DiscreteProblem(object):
                                         pot_term + \
                                         0.5 * (l+1) * l * e.integrate_phi_phi(j, i)
                         val *= e.jacobian
+                        print i_glob, j_glob, val, e.jacobian
                         J[i_glob, j_glob] += val
         return J
 

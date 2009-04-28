@@ -29,10 +29,9 @@ def plot_Y(Y, a, b):
 # interval end points
 a = 0.
 b = pi
-b = 5.
 
 # number of elements:
-N = 5
+N = 50
 
 # x values of the nodes:
 x_values =[(b-a)/N * i for i in range(N+1)]
@@ -65,7 +64,6 @@ def schroed_l(m, l=0):
     B = d.assemble_schroed(rhs=True, pot="well1d")
     print A
     print B
-    #stop
     print "inverting"
     from numpy import matrix, array
     M = matrix(inv(B))*matrix(A)

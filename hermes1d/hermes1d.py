@@ -373,7 +373,8 @@ class DiscreteProblem(object):
         """
         return self._ndofs
 
-    def assemble_schroed(self, rhs=True, l=0., pot="well", a=1.):
+    def assemble_schroed(self, rhs=True, l=0., pot="well", a=1.,
+            bc_calculate=True):
         J = zeros((self._ndofs, self._ndofs))
         for m in self._meshes:
             for e in m.elements:
@@ -406,7 +407,7 @@ class DiscreteProblem(object):
                         val *= e.jacobian
                         #print i_glob, j_glob, val, e.jacobian
                         J[i_glob, j_glob] += val
-        if not rhs:
+        if not rhs and bc_calculate:
             for m in self._meshes:
                 e = m.elements[-1]
                 for i in range(len(e.dofs)):

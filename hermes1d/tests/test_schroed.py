@@ -5,7 +5,7 @@ from hermes1d import Node, Element, DiscreteProblem, Mesh
 
 def eq(a, b, eps=1e-8, verbose=False):
     if verbose:
-        print abs(a-b)
+        print a, b, abs(a-b)
     return abs(a-b) < eps
 
 def test_hydrogen1():
@@ -49,8 +49,10 @@ def test_hydrogen2():
         m.set_bc(left=False, value=0)
         d = DiscreteProblem(meshes=[m])
         d.assign_dofs()
-        A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen", a=b)
-        B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen", a=b)
+        A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen", a=b,
+                bc_calculate=False)
+        B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen", a=b,
+                bc_calculate=False)
         M = dot(inv(B), matrix(A))
         w, v = eig(M)
         r = list(w)

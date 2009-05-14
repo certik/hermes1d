@@ -56,9 +56,10 @@ def schroed_l(m, l=0):
     print "assembling"
     #A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
     #B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen")
-    A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen",
+    pot = "hydrogen"
+    A = d.assemble_schroed(rhs=False, l=l, pot=pot,
             bc_calculate=False)
-    B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen",
+    B = d.assemble_schroed(rhs=True, l=l, pot=pot,
             bc_calculate=False)
     print A
     print B

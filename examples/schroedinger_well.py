@@ -28,8 +28,8 @@ def plot_Y(Y, a, b):
 
 # interval end points
 a = 0.
-#b = pi
-b = 30
+b = pi
+#b = 30
 
 # number of elements:
 N = 20
@@ -45,7 +45,7 @@ elements = [Element(nodes[i], nodes[i+1], order=2) for i in range(N)]
 m1 = Mesh(nodes, elements)
 
 def schroed_l(m, l=0):
-    #m.set_bc(left=False, value=0)
+    m.set_bc(left=False, value=0)
     # definition of the ODE system:
     d = DiscreteProblem(meshes=[m])
 
@@ -58,7 +58,7 @@ def schroed_l(m, l=0):
     #A = d.assemble_schroed(rhs=False, l=l, pot="hydrogen")
     #B = d.assemble_schroed(rhs=True, l=l, pot="hydrogen")
     pot = "hydrogen"
-    #pot = "well"
+    pot = "well"
     A = d.assemble_schroed(rhs=False, l=l, pot=pot,
             bc_calculate=False)
     B = d.assemble_schroed(rhs=True, l=l, pot=pot,
@@ -117,7 +117,7 @@ print "results:"
 #    print "l=%d; E=%f" % (l, w)
 print "plotting:"
 from pylab import plot, show, legend
-for i in range(5):
+for i in range(6):
     w, v, l, x, y = r[i]
     plot(x, y, label="l=%d, eig=%f" % (l, w))
 legend()

@@ -29,7 +29,6 @@ def plot_Y(Y, a, b):
 # interval end points
 a = 0.
 b = pi
-#b = 30
 
 # number of elements:
 N = 20
@@ -117,7 +116,7 @@ print "results:"
 #    print "l=%d; E=%f" % (l, w)
 print "plotting:"
 from pylab import plot, show, legend
-for i in range(6):
+for i in range(15):
     w, v, l, x, y = r[i]
     plot(x, y, label="l=%d, eig=%f" % (l, w))
 legend()

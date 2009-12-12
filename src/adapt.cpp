@@ -11,11 +11,11 @@
 // reference solution and the projection. Thus one can visually 
 // examine the candidates and see whether the adaptivity algorithm
 // selects the correct one. 
-int PLOT_CANDIDATE_PROJECTIONS = 1;
+int PLOT_CANDIDATE_PROJECTIONS = 0;
 
 // This is another help for debugging hp-adaptivity; All candidates
 //that are tried are printed along with their performance criterion
-int PRINT_CANDIDATES = 1;
+int PRINT_CANDIDATES = 0;
 
 double calc_elem_est_error_squared_p(int norm, Element *e, Element *e_ref) 
 {

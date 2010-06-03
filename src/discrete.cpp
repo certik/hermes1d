@@ -438,11 +438,12 @@ void newton(DiscreteProblem *dp, Mesh *mesh,
     p.push("mat", c2py_CooMatrix(mat));
     p.push("rhs", c2numpy_double_inplace(res, mat->get_size()));
     p.exec("m = mat.to_scipy_coo().todense()");
+    p.exec("from numpy.linalg import solve");
+    p.exec("sol = solve(m, rhs)");
     p.exec("print m");
     p.exec("print rhs");
-    p.exec("print 'solution'");
-    p.exec("from numpy.linalg import solve");
-    p.exec("print solve(m, rhs)");
+    p.exec("print sol");
+    //matrix_solver = 0;
     if (matrix_solver == 0) solve_linear_system_dense_lu(mat, res);
     if (matrix_solver == 1) solve_linear_system_scipy_umfpack(mat, res);
     if (matrix_solver == 2) { 
@@ -453,6 +454,7 @@ void newton(DiscreteProblem *dp, Mesh *mesh,
                                         matrix_solver_maxiter);
       if(flag == 0) error("CG (regular) did not converge.");
     }
+    p.exec("print 'solution'");
     p.exec("print rhs");
 
     // updating vector y by new solution which is in res

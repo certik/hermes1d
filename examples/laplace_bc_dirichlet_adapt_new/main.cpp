@@ -121,7 +121,7 @@ int main() {
              i, mesh_ref_local->assign_dofs());
 
       // Newton's loop on the FTR mesh
-      newton(dp, mesh_ref_local, MATRIX_SOLVER, MATRIX_SOLVER_TOL, MATRIX_SOLVER_MAXITER,
+      newton(dp, mesh_ref_local, 1, MATRIX_SOLVER_TOL, MATRIX_SOLVER_MAXITER,
              NEWTON_TOL_REF, NEWTON_MAXITER);
 
       // Print FTR solution (enumerated) 
